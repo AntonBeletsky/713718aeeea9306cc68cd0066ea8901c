@@ -1,53 +1,53 @@
 /* https://learn.javascript.ru/mouse-drag-and-drop */
 
-let currentDroppable = null;
+let slov_currentDroppable = null;
 
 /* Событие mousedown срабатывает, когда кнопка указывающего устройства (к примеру, мыши) нажата над элементом. */
-ball.onmousedown = function(event) {
+slon.onmousedown = function(event) {
 
-  let shiftX = event.clientX - ball.getBoundingClientRect().left;
-  let shiftY = event.clientY - ball.getBoundingClientRect().top;
+  let shiftX = event.clientX - slon.getBoundingClientRect().left;
+  let shiftY = event.clientY - slon.getBoundingClientRect().top;
 
-  ball.style.position = 'absolute';
-  ball.style.zIndex = 1000;
-  document.body.append(ball);
+  slon.style.position = 'absolute';
+  slon.style.zIndex = 1000;
+  document.body.append(slon);
 
   moveAt(event.pageX, event.pageY);
 
   function moveAt(pageX, pageY) {
-    ball.style.left = pageX - shiftX + 'px';
-    ball.style.top = pageY - shiftY + 'px';
+    slon.style.left = pageX - shiftX + 'px';
+    slon.style.top = pageY - shiftY + 'px';
   }
 
   function onMouseMove(event) {
     moveAt(event.pageX, event.pageY);
 
-    ball.hidden = true;
+    slon.hidden = true;
     let elemBelow = document.elementFromPoint(event.clientX, event.clientY);
-    ball.hidden = false;
+    slon.hidden = false;
 
     if (!elemBelow) return;
 
     let droppableBelow = elemBelow.closest('.droppable');
 
-    if (currentDroppable != droppableBelow) {
-      if (currentDroppable) { // null если мы были не над droppable до этого события
+    if (slov_currentDroppable != droppableBelow) {
+      if (slov_currentDroppable) { // null если мы были не над droppable до этого события
         // (например, над пустым пространством)
-        leaveDroppable(currentDroppable);
+        leaveDroppable(slov_currentDroppable);
       }
-      currentDroppable = droppableBelow;
-      if (currentDroppable) { // null если мы не над droppable сейчас, во время этого события
+      slov_currentDroppable = droppableBelow;
+      if (slov_currentDroppable) { // null если мы не над droppable сейчас, во время этого события
         // (например, только что покинули droppable)
-        enterDroppable(currentDroppable);
+        enterDroppable(slov_currentDroppable);
       }
     }
   }
 
   document.addEventListener('mousemove', onMouseMove);
 
-  ball.onmouseup = function() {
+  slon.onmouseup = function() {
     document.removeEventListener('mousemove', onMouseMove);
-    ball.onmouseup = null;
+    slon.onmouseup = null;
   };
 
 };
@@ -63,6 +63,6 @@ function leaveDroppable(elem) {
   elem.style.background = '';
 }
 
-ball.ondragstart = function() {
+slon.ondragstart = function() {
   return false;
 };
