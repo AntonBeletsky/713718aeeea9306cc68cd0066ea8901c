@@ -1,0 +1,61 @@
+
+
+
+body:after {
+  content: '';
+  position:fixed;
+  background: url(https://images.chesscomfiles.com/uploads/v1/theme/101304-0.2651045e.jpeg) center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  height:100vh;
+  top:0;
+  left:0;
+  right:0;
+  z-index:-1;
+}
+
+#sb .nav-panel-theme-bg {
+  background-image: url(https://images.chesscomfiles.com/uploads/v1/theme/101304-0.2651045e.jpeg);
+}
+
+#sb .nav-panel-shade {
+  background: rgba(0,0,0, 0.4);
+}
+
+.using-nav-horizontal:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+ background: -moz-linear-gradient(to top, transparent 0, transparent 0, rgba(0, 0, 0, .25) 100%);
+  background: -webkit-linear-gradient(to top, transparent 0, transparent 0, rgba(0, 0, 0, .25) 100%);
+  background: linear-gradient(to top, transparent 0, transparent 0, rgba(0, 0, 0, .25) 100%);
+  height: 52px;
+}
+
+
+
+
+
+.theme-font,
+.theme-font > ul > li > a,
+.theme-font > ul > li > a [class^="icon-"],
+.theme-font > ul > li > a [class*=" icon-"],
+.theme-font > a,
+.theme-font .icon-menu,
+.theme-font > ul > li > div > a i {
+  color: rgba(255\2C 255\2C 255, 0\2E 5) !important;
+}
+
+.left-nav {
+  background: rgba(0, 0, 0, 0\2E 3);
+}
+
+.left-nav .search-input .icon-magnifying-glass {
+  color: rgba(255\2C 255\2C 255, 0\2E 5);
+}
+
