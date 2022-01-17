@@ -3,7 +3,6 @@
 let currentDroppable = null;
 
 /* Событие mousedown срабатывает, когда кнопка указывающего устройства (к примеру, мыши) нажата над элементом. */
-//let ball = document.getElementById("ball");
 ball.onmousedown = function(event) {
 
   let shiftX = event.clientX - ball.getBoundingClientRect().left;

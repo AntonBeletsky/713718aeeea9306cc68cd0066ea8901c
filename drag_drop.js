@@ -4,12 +4,13 @@ let currentDroppable = null;
 
 /* Событие mousedown срабатывает, когда кнопка указывающего устройства (к примеру, мыши) нажата над элементом. */
 // let ball = document.getElementById("ball");
-let ball = document.getElementsByClassName("ball")
-console.log(ball);
+let balls = document.getElementsByClassName("ball")
+console.log(balls);
 
-ball = ball[1];
+//console.log(ball);
 
-console.log(ball);
+for(var i = 0; i < ball.length; i++){
+  ball = balls[i];
 
 ball.onmousedown = function(event) {
 
@@ -60,6 +61,9 @@ ball.onmousedown = function(event) {
 
 };
 
+balls[i] = ball;
+}
+
 /* element изменение когда мыш наведена*/
 function enterDroppable(elem) {
   // elem.style.background = 'pink';
@@ -71,6 +75,13 @@ function leaveDroppable(elem) {
   elem.style.background = '';
 }
 
+for(var i = 0; i < ball.length; i++){
+  ball = balls[i];
+
 ball.ondragstart = function() {
   return false;
 };
+
+balls[i] = ball;
+
+}
