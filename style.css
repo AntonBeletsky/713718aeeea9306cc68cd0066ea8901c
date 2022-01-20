@@ -63,6 +63,7 @@ display: grid;
   color: #fff;
 }
 
+/*
 #A8 {
   cursor: pointer;
   width: 70px;
@@ -86,10 +87,12 @@ display: grid;
   width: 70px;
   height: 70px;
 }
+*/
 
-img {
+img, chess-figure {
   width: 70px;
   height: 70px;
   /* transform: scale(1.5);*/ 
 }
+
 
