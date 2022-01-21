@@ -1,76 +1,104 @@
 .chessboard {
-    border: 49px solid #462921;
-    width: 560px;
-    margin: 0 auto;
-    display: grid;
-    grid-gap: 0;
-    grid-template-columns: repeat(8, 70px);
-    grid-template-rows: 40px repeat(8, 70px) 40px;
-    grid-auto-flow: row;
-  }
-  .chessboard-inner{
+  border: 49px solid #462921;
+  width: 560px;
+  margin: 0 auto;
   display: grid;
-    grid-gap: 0;
-    grid-template-columns: repeat(8, auto);
-    grid-template-rows: auto;
-    grid-auto-flow: row;
-    align-items: strech;
-  }
-  
-  .piece {
-    background-color: #b5915f;
-    color: #000;
-    text-align: center;
-  }
-  .piece-inner{
-    text-align: center;
-    align-self: center;
-  }
-  .top,
-  .bottom{
-    display: grid;
-    align-items: stretch;
-    background-color: #7d694c;
-  }
-  .top {
-    grid-column-start: 1;
-    grid-column-end: 9;
-    grid-row-start: 1;
-    grid-row-end: 1;
-  }
-  .bottom {
-    grid-column-start: 1;
-    grid-column-end: 9;
-    grid-row-start: 10;
-    grid-row-end: 10;
-  }
-  
-  .piece:nth-child(-2n+9), 
-  .piece:nth-child(9) ~ div:nth-child(-2n+16), 
-  .piece:nth-child(17) ~ div:nth-child(-2n+25), 
-  .piece:nth-child(25) ~ div:nth-child(-2n+32), 
-  .piece:nth-child(33) ~ div:nth-child(-2n+41), 
-  .piece:nth-child(41) ~ div:nth-child(-2n+48), 
-  .piece:nth-child(49) ~ div:nth-child(-2n+57), 
-  .piece:nth-child(57) ~ div:nth-child(-2n+64){
-    background-color: #441a03;
-    color: #fff;
-  }
-  
-  img, chess-figure {
-    width: 70px;
-    height: 70px;
-  }
-  
-  .draggable {
-    cursor: pointer;
-  }
-  
-  .post-drop{
-    background-image: url("./../img/Лангольеры-кадр.jpg");
-  
-  }
-  
-  /* классы фигур */
-  
-  
+  grid-gap: 0;
+  grid-template-columns: repeat(8, 70px);
+  grid-template-rows: 40px repeat(8, 70px) 40px;
+  grid-auto-flow: row;
+}
+
+.chessboard-inner {
+  display: grid;
+  grid-gap: 0;
+  grid-template-columns: repeat(8, auto);
+  grid-template-rows: auto;
+  grid-auto-flow: row;
+  align-items: strech;
+}
+
+.piece {
+  background-color: #b5915f;
+  color: #000;
+  text-align: center;
+}
+
+.piece-inner {
+  text-align: center;
+  align-self: center;
+}
+
+.top,
+.bottom {
+  display: grid;
+  align-items: stretch;
+  background-color: #7d694c;
+}
+
+.top {
+  grid-column-start: 1;
+  grid-column-end: 9;
+  grid-row-start: 1;
+  grid-row-end: 1;
+}
+
+.bottom {
+  grid-column-start: 1;
+  grid-column-end: 9;
+  grid-row-start: 10;
+  grid-row-end: 10;
+}
+
+.piece:nth-child(-2n+9),
+.piece:nth-child(9)~div:nth-child(-2n+16),
+.piece:nth-child(17)~div:nth-child(-2n+25),
+.piece:nth-child(25)~div:nth-child(-2n+32),
+.piece:nth-child(33)~div:nth-child(-2n+41),
+.piece:nth-child(41)~div:nth-child(-2n+48),
+.piece:nth-child(49)~div:nth-child(-2n+57),
+.piece:nth-child(57)~div:nth-child(-2n+64) {
+  background-color: #441a03;
+  color: #fff;
+}
+
+img, chess-figure {
+  width: 70px;
+  height: 70px;
+}
+
+.draggable {
+  cursor: pointer;
+}
+
+.post-drop {
+  background-image: url("./../img/Лангольеры-кадр.jpg");
+
+}
+
+/* классы фигур */
+
+
+/* notes moves*/
+.moves-box {
+  margin: 0 auto;
+  margin-left: 40px;
+  display: grid;
+  grid-gap: 0;
+  grid-template-columns: repeat(1, 300px);
+  grid-auto-flow: row;
+  background-color: #7d694c;
+  color: #dbd9d7;
+  font-size: 20px;
+  border: thick double #441a03;
+}
+
+.moves-box table {}
+
+.moves-box table tr {
+  /* border: solid #441a03; */
+}
+
+.moves-box table tr td {
+  border: solid #887353;
+}

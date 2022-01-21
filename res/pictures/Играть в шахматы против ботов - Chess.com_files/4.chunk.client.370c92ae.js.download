@@ -1,1 +1,0 @@
-(("undefined"!=typeof self?self:this).wpJsonpChessCom=("undefined"!=typeof self?self:this).wpJsonpChessCom||[]).push([[4],{"./cob/services/game-ui/modes/playing.ts":function(s,e,o){"use strict";o.r(e);var d=o("./node_modules/@chesscom/chessboard/dist/chessboard/chessboard.js");e.default=d.playingMode}}]);
