@@ -8,7 +8,7 @@ DragManager.onDragCancel = function(dragObject) {
     // dragObject - слон
     // dropElem - клетка
 
-    dragObject.elem.style.display = 'none';
+    // dragObject.elem.style.display = 'none';
     
     console.log(dropElem);
     // dropElem.style.background = 'green';

@@ -3,12 +3,13 @@ var post_drop = 'post-drop';
 DragManager.onDragCancel = function(dragObject) {
     // dragObject.avatar.rollback();
   };
+  
   // перетащили элемент
   DragManager.onDragEnd = function(dragObject, dropElem) {
     // dragObject - слон
     // dropElem - клетка
 
-    dragObject.elem.style.display = 'none';
+    //dragObject.elem.style.display = 'none';
     
     console.log(dropElem);
     // dropElem.style.background = 'green';

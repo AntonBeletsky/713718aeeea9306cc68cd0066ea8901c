@@ -63,32 +63,6 @@ display: grid;
   color: #fff;
 }
 
-/*
-#A8 {
-  cursor: pointer;
-  width: 70px;
-  height: 70px;
-}
-
-#B8 {
-  cursor: pointer;
-  width: 70px;
-  height: 70px;
-}
-
-#grate {
-  cursor: pointer;
-  width: 70px;
-  height: 70px;
-}
-
-#ball {
-  cursor: pointer;
-  width: 70px;
-  height: 70px;
-}
-*/
-
 img, chess-figure {
   width: 70px;
   height: 70px;
@@ -102,7 +76,7 @@ img, chess-figure {
 }
 
 .post-drop{
-  background-image: url('Лангольеры-кадр.jpg');
+  background-image: url("./../img/Лангольеры-кадр.jpg");
   /* width: 70px; /* Ширина области */
   /* height: 70px; /* Высота области */
   /* transform: scale(0.5); */
