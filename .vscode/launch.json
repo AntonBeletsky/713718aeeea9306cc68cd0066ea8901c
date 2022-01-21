@@ -5,10 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Microsoft Edge and open the Edge DevTools",
+            "name": "Launch Chrome",
             "request": "launch",
-            "type": "vscode-edge-devtools.debug",
-            "url": "" // Provide your project's url to finish configuring
+            "type": "pwa-chrome",
+            "url": "file:///C:/GitHub/chess_board_html/index.html",
+            "webRoot": "${workspaceFolder}"
         }
     ]
 }

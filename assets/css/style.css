@@ -24,6 +24,7 @@ header, footer {
   /*width: 100%;*/
   background: #1c87c9;
 }
+
 /*
 .header-menu {
   justify-content: flex-end;
@@ -35,11 +36,13 @@ header, footer {
 h2 {
   /*margin: 0 0 8px;*/
 }
+
 ul li {
   display: inline-block;
   /*padding: 0 0px;*/
   list-style: none;
 }
+
 /*
 aside {
   flex: 0.4;
@@ -52,24 +55,24 @@ section {
   /*flex: 1; */
   /*padding-right: 15px;*/
 }
+
 header, footer {
   /*padding: 0 10px;*/
   background: #ccc;
 }
 
-.container-center{
+.container-center {
   display: flex;
   grid-auto-flow: row;
 }
 
-.lefr-block-board{
+.lefr-block-board {
   height: 700px;
   width: 350px;
 }
 
-.right-block-board{
-    height: 700px;
-    width: 350px;
+.right-block-board {
+  height: 700px;
+  width: 350px;
 
 }
-
