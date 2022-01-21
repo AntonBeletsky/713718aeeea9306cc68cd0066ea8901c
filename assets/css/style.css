@@ -1,86 +1,73 @@
-body {
-  margin: 40px;
-  background-color: #5d5d5d;
+/* https://www.w3docs.com/snippets/html/html5-page-structure.html */
+/* https://developer.mozilla.org/ru/docs/Web/CSS/CSS_Flexible_Box_Layout/Aligning_Items_in_a_Flex_Container */
+/* https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity*/
+
+
+html, body {
+  /*display: flex;*/
+  /*flex-wrap: wrap;*/
+  height: 100%;
+  margin: 0;
+  background-color: #9bc085;
 }
+
 .wrapper {
-  border: 49px solid #462921;
-  width: 560px;
-  margin: 0 auto;
-  display: grid;
-  grid-gap: 0;
-  grid-template-columns: repeat(8, 70px);
-  grid-template-rows: 40px repeat(8, 70px) 40px;
-  grid-auto-flow: row;
-}
-.wrapper-inner{
-display: grid;
-  grid-gap: 0;
-  grid-template-columns: repeat(8, auto);
-  grid-template-rows: auto;
-  grid-auto-flow: row;
-  align-items: strech;
+  /*display: flex;*/
+  /*height: 100%;*/
+  /*width: 100%;*/
+  background-color: #809159;
 }
 
-.box {
-  /*padding: 20px;*/
-  /*font-size: 150%;*/
-  background-color: #b5915f;
-  color: #000;
-  text-align: center;
+header, footer {
+  /*display: flex;*/
+  /*align-items: center;*/
+  /*width: 100%;*/
+  background: #1c87c9;
 }
-.box-inner{
-  text-align: center;
-  align-self: center;
-}
-.top,
-.bottom{
-  display: grid;
-  align-items: stretch;
-  background-color: #7d694c;
-}
-.top {
-  grid-column-start: 1;
-  grid-column-end: 9;
-  grid-row-start: 1;
-  grid-row-end: 1;
-}
-.bottom {
-  grid-column-start: 1;
-  grid-column-end: 9;
-  grid-row-start: 10;
-  grid-row-end: 10;
-}
-
-.box:nth-child(-2n+9), 
-.box:nth-child(9) ~ div:nth-child(-2n+16), 
-.box:nth-child(17) ~ div:nth-child(-2n+25), 
-.box:nth-child(25) ~ div:nth-child(-2n+32), 
-.box:nth-child(33) ~ div:nth-child(-2n+41), 
-.box:nth-child(41) ~ div:nth-child(-2n+48), 
-.box:nth-child(49) ~ div:nth-child(-2n+57), 
-.box:nth-child(57) ~ div:nth-child(-2n+64){
-  background-color: #441a03;
+/*
+.header-menu {
+  justify-content: flex-end;
+  height: 60px;
+  background: #1c87c9;
   color: #fff;
+}*/
+
+h2 {
+  /*margin: 0 0 8px;*/
+}
+ul li {
+  display: inline-block;
+  /*padding: 0 0px;*/
+  list-style: none;
+}
+/*
+aside {
+  flex: 0.4;
+  height: 165px;
+  padding-left: 15px;
+  border-left: 1px solid #666;
+}
+*/
+section {
+  /*flex: 1; */
+  /*padding-right: 15px;*/
+}
+header, footer {
+  /*padding: 0 10px;*/
+  background: #ccc;
 }
 
-img, chess-figure {
-  width: 70px;
-  height: 70px;
-  /* transform: scale(1.5);*/ 
+.container-center{
+  display: flex;
+  grid-auto-flow: row;
 }
 
-/* //////////// */ 
-
-.draggable {
-  cursor: pointer;
+.lefr-block-board{
+  height: 700px;
+  width: 350px;
 }
 
-.post-drop{
-  background-image: url("./../img/Лангольеры-кадр.jpg");
-  /* width: 70px; /* Ширина области */
-  /* height: 70px; /* Высота области */
-  /* transform: scale(0.5); */
+.right-block-board{
+    height: 700px;
+    width: 350px;
 }
-
-/* классы фигур */
-
