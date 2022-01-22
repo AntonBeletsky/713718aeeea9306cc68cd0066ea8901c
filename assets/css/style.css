@@ -74,9 +74,10 @@ header, footer {
 .right-block-board {
   height: 700px;
   width: 350px;
+  padding-left: 70px;
 }
 
-.btn-green, .btn-blue, .btn-red{
+.btn-green, .btn-blue, .btn-red, .btn-black, .btn-white {
   /*background-color: #4CAF50;*/
   border: none;
   color: white;
@@ -85,6 +86,7 @@ header, footer {
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
+  font-weight: bold;
   margin: 4px 2px;
   cursor: pointer;
 }
@@ -93,10 +95,38 @@ header, footer {
   background-color: #4CAF50;
 }
 
+.btn-green:hover {
+  color: #000000;
+}
+
 .btn-blue {
   background-color: #008CBA;
 }
 
+.btn-blue:hover {
+  color: #000000;
+}
+
 .btn-red {
   background-color: #f44336;
+}
+
+.btn-red:hover {
+  color: #000000;
+}
+
+.btn-black {
+  background-color: #441a03;
+}
+
+.btn-black:hover {
+  color: #13c91c;
+}
+
+.btn-white {
+  background-color: #b5915f;
+}
+
+.btn-white:hover {
+  color: #13c91c;
 }
