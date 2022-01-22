@@ -29,26 +29,26 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
 Кстати, ещё можно использовать inline-block. Хотя и у него свои задачи.
 
 -->
+  <header>
+
+      <nav class="topnav">
+        <ul>
+        <li><a class="active" href="#home">Home</a></li>
+        <li><a href="#news">News</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#about">About</a></li>
+        </ul>
+      </nav>
+
+  </header>
 
 <div class="wrapper">
-
-  <header> HEAD  HEAD HEAD 
-    <div class="container-head">
-    <nav>
-      <ul>
-        <li>Menu item1</li>
-        <li>Menu item2</li>
-        <li>Menu item</li>
-      </ul>
-    </nav>
-    </div>
-  </header>
 <!-- chessboard -->
 
 <!-- центр блок-->
 <section>
   <div class="container-center">
-
+  <!-- LEFT BLOCK -->
     <div class="lefr-block-board">
       <br>
       <br>
@@ -79,12 +79,7 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
     </div>
     </div>
 
-    LEFT MENU LEFT MENU LEFT MENU LEFT MENU LEFT MENU 
-    LEFT MENU LEFT MENU LEFT MENU LEFT MENU LEFT MENU 
-    LEFT MENU LEFT MENU LEFT MENU LEFT MENU LEFT MENU 
-    LEFT MENU LEFT MENU LEFT MENU LEFT MENU LEFT MENU 
-    LEFT MENU LEFT MENU LEFT MENU LEFT MENU LEFT MENU 
-    LEFT MENU LEFT MENU LEFT MENU LEFT MENU LEFT MENU 
+    <!--
     <br>
     <button class="btn-green">CSS Button</button>
     <br>
@@ -99,12 +94,12 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
             <li>Menu item</li>
           </ul>
         </nav>
+      -->
 
-    </div>
+  </div>
 
+<!-- CENTRAL CONTENT -->
 <main>  
-  Центральная надпись ЛОЛОЛОЛО
-  
 <div class="chessboard">
   <div class="top">
     <div class="chessboard-inner">
@@ -207,9 +202,11 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
 
 </div>
 </main>
-
+<!-- right-block -->
 <div class="right-block-board">
-  <h1>запись игры</h1>
+  <div class="moves-header">
+      <h1>Запись Партии</h1>
+  </div>
   <div class="moves-box">  
   <table>
     <tr>
@@ -307,8 +304,6 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
 
   </div>
 
-  .right-block-board .right-block-board .right-block-board .right-block-board
-  запись партии трулала  
 </div>
 <!-- -conatainer end-->
 </div>
@@ -317,16 +312,22 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
 <!-- chessboard end-->
 
 <section>
+  <br>
+  <br>
+  <br>
+  <!--
   секция внизу секция внизу секция внизу секция внизу секция внизу секция внизу секция внизу секция внизу 
+-->
 </section>
+
+<footer>
+  <div>
+    Develop by Asguard01
+  </div>
+</footer>
 
 <!-- wrapper end-->
 </div>
-
-<footer>
-  footer
-</footer>
-
 
 <!-- js -->
 <script src="./assets/js/drag_drop_manager.js"></script>

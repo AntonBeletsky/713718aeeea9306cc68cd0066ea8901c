@@ -139,6 +139,28 @@ img.figure:hover {
   border: solid #887353;
 }
 
+.moves-header {
+  margin: auto;
+  margin-left: 40px;
+  margin-bottom: 8px;
+  display: grid;
+  background-color: #7d694c;
+  color: #000000;
+  font-size: 20px;
+  border: solid #441a03;
+  box-shadow: 5px -5px 10px 5px #917464;
+  font-weight: bold;
+  height: 50px;
+}
+
+.moves-header h1 {
+  padding-top: 5px;
+  margin-left: 40px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  font-family: font_rule1;
+}
+
 .move-pagenation-box {
   padding: 3px;
   margin: 7px;
