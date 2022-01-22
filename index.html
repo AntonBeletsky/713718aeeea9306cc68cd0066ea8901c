@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="./assets/css/style.css">
   <link rel="stylesheet" href="./assets/css/chessboard.css">
   <link rel="stylesheet" href="./assets/css/dragDemo.css">
+  <link rel="stylesheet" href="./assets/css/model.css">
 </head>
 <body>
 <!--
@@ -36,22 +37,31 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
         <li><a href="#news">News</a></li>
         <li><a href="#contact">Contact</a></li>
         <li><a href="#about">About</a></li>
-        <li><span>.....</span></li>
-        <li><span>.....</span></li>
-        <li><span>.....</span></li>
         <li>
-          
+          <a href="#openModal">Открыть модальное окно</a>
         </li>
         </ul>
       </nav>
 
-      <div class="bla">
+      <div class="nav-input">
         <input type="text" id="name" name="name" value="text here">
       </div>
+
+        <nav class="topnav">
+          <ul>
+            <li>
+              <div class="auth-block">
+              <img src="./assets/img/img_avatar2.png" class="profile">
+              <span>Joan</span>
+              </div>
+            </li>
+            <li><a href="#news">Sign UP</a></li>
+            <li><a href="#contact">Log In</a></li>
+            <li><a href="#about">Log Out</a></li>
+          </ul>
+        </nav>
       
-      <div class="auth-block">
-        <p>1232323</p>
-      </div>
+
   </header>
 
 <!-- центр блок-->
@@ -326,8 +336,29 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
 
 
 
+<!-- Modals -->
+
+<!-- Trigger/Open the Modal -->
+<!-- openModal - id модального окна (элемента div) -->
+<div id="openModal" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Название</h3>
+        <a href="#close" title="Close" class="close">×</a>
+      </div>
+      <div class="modal-body">
+        <p>Содержимое модального окна...</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Modals -->
+
+
 <!-- js -->
 <script src="./assets/js/drag_drop_manager.js"></script>
 <script src="./assets/js/drag_drop_use.js"></script>
+<script src="./assets/js/modal.js"></script>
 </body>
 </html>
