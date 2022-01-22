@@ -13,7 +13,7 @@ DragManager.onDragCancel = function(dragObject) {
     console.log(dropElem);
     // dropElem.style.background = 'green';
     //dropElem.style.background = 'green';
-    dropElem.style.background = 'lol';
+    //dropElem.style.background = 'lol';
     dropElem.classList.add(post_drop);
 
     setTimeout(function() {

@@ -1,8 +1,8 @@
-
 .draggable {
   cursor: pointer;
 }
 
-.post_drop{
-  background-image: url('http://risovach.ru/upload/2017/12/mem/langoler_162647540_orig_.jpg');
+.post-drop {
+  /* background-image: url("./../img/Лангольеры-кадр.jpg"); */
+  background-color: chartreuse !important;
 }
