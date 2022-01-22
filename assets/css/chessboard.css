@@ -118,7 +118,7 @@ img.figure:hover {
   grid-template-columns: repeat(1, 300px);
   grid-auto-flow: row;
   background-color: #7d694c;
-  color: #dbd9d7;
+  color: #ccbaa8;
   font-size: 20px;
   border: thick double #441a03;
   box-shadow: 5px -5px 10px 5px #917464;
@@ -132,7 +132,7 @@ img.figure:hover {
 .moves-box table tr:hover {
   /* border: solid #441a03; */
   /* border-radius: 3px;*/
-  color: #13c91c;
+  color: #f0efe9;
 }
 
 .moves-box table tr td {

@@ -25,6 +25,26 @@ header, footer {
   background: #1c87c9;
 }
 
+/* sidebar*/
+/* Style the sidebar - fixed full height */
+/* sidebar end*/
+
+.player-card {
+  height: 250px;
+  width: 300px;
+  background-color: #441a03;
+  margin: 20px;
+  border: thick double #b5915f;
+  box-shadow: 5px -5px 10px 5px #917464;
+  color: #b5915f;
+  font-size: 22px;
+  display: grid;
+}
+
+.player-card div{
+  margin: 20px;
+}
+
 /*
 .header-menu {
   justify-content: flex-end;
@@ -80,7 +100,7 @@ header, footer {
 .btn-green, .btn-blue, .btn-red, .btn-black, .btn-white {
   /*background-color: #4CAF50;*/
   border: none;
-  color: white;
+  /*color: white;*/
   padding: 15px 32px;
   text-align: center;
   text-decoration: none;
@@ -93,6 +113,7 @@ header, footer {
 
 .btn-green {
   background-color: #4CAF50;
+  color: white;
 }
 
 .btn-green:hover {
@@ -101,6 +122,7 @@ header, footer {
 
 .btn-blue {
   background-color: #008CBA;
+  color: white;
 }
 
 .btn-blue:hover {
@@ -109,6 +131,7 @@ header, footer {
 
 .btn-red {
   background-color: #f44336;
+  color: white;
 }
 
 .btn-red:hover {
@@ -117,10 +140,12 @@ header, footer {
 
 .btn-black {
   background-color: #441a03;
+  color: #b5915f;
 }
 
 .btn-black:hover {
-  color: #13c91c;
+  color: #b5915f;
+  color: white;
 }
 
 .btn-white {
@@ -128,5 +153,7 @@ header, footer {
 }
 
 .btn-white:hover {
-  color: #13c91c;
+  color: #441a03;
 }
+
+/* green #13c91c;*/
