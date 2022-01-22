@@ -7,6 +7,7 @@
   grid-template-columns: repeat(8, 70px);
   grid-template-rows: 40px repeat(8, 70px) 40px;
   grid-auto-flow: row;
+  box-shadow: 5px -5px 10px 5px #917464;
 }
 
 .chessboard-inner {
@@ -27,6 +28,16 @@
 .piece-inner {
   text-align: center;
   align-self: center;
+}
+
+.piece-green {
+  border: #13c91c solid 5px;
+  border-radius: 3px;
+}
+
+.piece-red {
+  border: #ec2112 solid 5px;
+  border-radius: 3px;
 }
 
 .top,
@@ -91,6 +102,7 @@ img, chess-figure {
   color: #dbd9d7;
   font-size: 20px;
   border: thick double #441a03;
+  box-shadow: 5px -5px 10px 5px #917464;
 }
 
 .moves-box table {}
