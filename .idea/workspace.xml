@@ -19,14 +19,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66ea4687-a801-4192-a580-a87438a914d0" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/css/model.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/css/style.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/css/text.txt" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/text.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/modal.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/modal.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-    </list>
+    <list default="true" id="66ea4687-a801-4192-a580-a87438a914d0" name="Default Changelist" comment="ref" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -69,8 +62,16 @@
       <updated>1642376302232</updated>
       <workItem from="1642376304971" duration="482000" />
       <workItem from="1642376800898" duration="814000" />
-      <workItem from="1642960512306" duration="797000" />
+      <workItem from="1642960512306" duration="889000" />
     </task>
+    <task id="LOCAL-00001" summary="ref">
+      <created>1642961344325</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1642961344325</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -90,6 +91,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="ref" />
+    <option name="LAST_COMMIT_MESSAGE" value="ref" />
   </component>
   <component name="WindowStateProjectService">
     <state x="414" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1642376460798">
@@ -164,5 +167,9 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="218" y="220" width="1440" height="711" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1642376843756" />
+    <state x="452" y="172" key="Vcs.Push.Dialog.v2" timestamp="1642961359719">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="452" y="172" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1642961359719" />
   </component>
 </project>
