@@ -15,9 +15,10 @@ html, body {
   height: 100%;
   margin: 0px;
   padding: 0px;
-  background-color: #9bc085;
-  overflow-y: hidden;
-  overflow-x: hidden;
+  /* background-color: #9bc085;*/
+  background-color: #032D44;
+  /*overflow-y: hidden;
+  overflow-x: hidden;*/
 
 }
 
@@ -45,7 +46,7 @@ img.profile {
   background-color: #441a03;
   margin: 20px;
   border: thick double #b5915f;
-  box-shadow: 5px -5px 10px 5px #917464;
+  box-shadow: 5px -5px 10px 5px #032D44;
   color: #b5915f;
   font-size: 22px;
   display: inline-block;

@@ -2,12 +2,13 @@
   border: 50px solid #462921;
   width: 560px;
   margin: 0 auto;
+  margin-left: 50px;
   display: grid;
   grid-gap: 0;
   grid-template-columns: repeat(8, 70px);
   grid-template-rows: 40px repeat(8, 70px) 40px;
   grid-auto-flow: row;
-  box-shadow: 5px -5px 10px 5px #917464;
+  box-shadow: 5px -5px 10px 5px #032D44;
 }
 
 .chessboard-inner {
@@ -87,11 +88,6 @@ img.figure:hover {
   width: 70px;
   height: 70px;
   transform: scale(1.1);
-  /*
-  -moz-box-shadow: 0 0 10px #000;
-  -webkit-box-shadow: 0 0 10px #000;
-  box-shadow: 0 0 10px #000;
-  */
 }
 
 
@@ -112,7 +108,7 @@ img.figure:hover {
   color: #ccbaa8;
   font-size: 20px;
   border: thick double #441a03;
-  box-shadow: 5px -5px 10px 5px #917464;
+  box-shadow: 5px -5px 10px 5px #032D44;
   font-weight: bold;
 }
 
@@ -133,16 +129,30 @@ img.figure:hover {
 .moves-header {
   margin: auto;
   margin-left: 40px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   display: grid;
   background-color: #7d694c;
   color: #000000;
   font-size: 20px;
   border: solid #441a03;
-  box-shadow: 5px -5px 10px 5px #917464;
+  /*border: thick double #b5915f;*/
+  box-shadow: 5px -5px 10px 5px #032D44;
   font-weight: bold;
   height: 50px;
 }
+
+.moves-header-sub2 {
+  margin-top: 1px;
+  margin-bottom: 1px;
+  margin-left: 1px;
+  margin-right: 1px;
+  border-width: 2px;
+  
+  padding: 0px;
+  border: solid #b5915f;
+}
+
+
 
 .moves-header h1 {
   padding-top: 5px;
@@ -156,4 +166,3 @@ img.figure:hover {
   padding: 3px;
   margin: 7px;
 }
-
