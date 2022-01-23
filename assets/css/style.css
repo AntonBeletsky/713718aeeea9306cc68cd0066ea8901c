@@ -98,7 +98,7 @@ img.flag {
   /* имя справо за картинкой*/
   color: #b5915f;
   display: inline;
-  text-shadow: 2px -2px 16px #b5915f;
+  text-shadow: 2px -2px 16px #032D44;
 }
 
 .auth-block span:hover {
