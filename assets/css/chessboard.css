@@ -116,6 +116,16 @@ img.figure:hover {
   cursor: default;
 }
 
+.moves-box table tr {
+  color: #ccbaa8;
+  background-color: #7d694c;
+}
+
+.moves-box table tr.honest {
+  background-color: #816d51;
+  color: #dac0a7;
+}
+
 .moves-box table tr:hover {
   /* border: solid #441a03; */
   /* border-radius: 3px;*/
@@ -147,7 +157,7 @@ img.figure:hover {
   margin-left: 1px;
   margin-right: 1px;
   border-width: 2px;
-  
+
   padding: 0px;
   border: solid #b5915f;
 }
