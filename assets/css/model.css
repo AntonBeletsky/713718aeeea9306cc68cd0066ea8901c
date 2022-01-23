@@ -8,7 +8,7 @@
     left: 0;
     background: rgba(0, 0, 0, 0.5);
     /* цвет фона */
-    z-index: 1050;
+    z-index: 20;
     opacity: 0;
     /* по умолчанию модальное окно прозрачно */
     -webkit-transition: opacity 200ms ease-in;

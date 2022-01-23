@@ -114,7 +114,7 @@ var DragManager = new function() {
 
     // инициировать начало переноса
     document.body.appendChild(avatar);
-    avatar.style.zIndex = 9999;
+    avatar.style.zIndex = 10;
     avatar.style.position = 'absolute';
   }
 
