@@ -139,16 +139,14 @@ footer {
 }
 
 .btn-green, .btn-blue, .btn-red, .btn-black, .btn-white {
-  /*background-color: #4CAF50;*/
   border: none;
-  /*color: white;*/
   padding: 15px 32px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 16px;
-  font-weight: bold;
-  margin: 4px 2px;
+  font-size: 14px;
+  font-weight: bolder;
+  margin: 2px 2px;
   cursor: pointer;
 }
 
@@ -185,16 +183,17 @@ footer {
 }
 
 .btn-black:hover {
-  color: #b5915f;
   color: white;
 }
 
 .btn-white {
   background-color: #b5915f;
+  color: #441a03;
 }
 
 .btn-white:hover {
-  color: #441a03;
+  color: #dbb052;
+  background-color: #966b54;
 }
 
 /* green #13c91c;*/
