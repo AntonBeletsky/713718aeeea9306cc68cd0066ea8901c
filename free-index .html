@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <meta name="Author" content="Anton Beletsky">
+  <title>Chess - Матричный процессор</title>
+  <!-- CSS-->
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/css/chessboard.css">
+  <link rel="stylesheet" href="./assets/css/dragDemo.css">
+  <link rel="stylesheet" href="./assets/css/model.css">
+</head>
+<body>
+<!--
+  examples
+https://stackoverflow.com/questions/9087332/making-a-wrapper-in-html5-css3
+https://css-tricks.com/snippets/html/html5-page-structure/
+https://www.w3docs.com/snippets/html/html5-page-structure.html
+https://developer.mozilla.org/ru/docs/Web/CSS/CSS_Flexible_piece_Layout/Aligning_Items_in_a_Flex_Container
+
+https://developer.mozilla.org/ru/docs/Learn/CSS/CSS_layout/Flexbox
+
+https://getbootstrap.com/docs/4.3/examples/album/
+
+https://developer.mozilla.org/ru/docs/Web/CSS/flex
+
+Если свойство float справляется со своей задачей, то и используйте его.
+Морально устарела несемантичная вёрстка (теги div везде, вместо более семантичных header, navigation, section, article и т.д.), но сам флоат вполне хорош.
+Флекс отчасти более удобен, но работает совсем по другому. Так что не стоит считать его полной заменой флоатам.
+Кстати, ещё можно использовать inline-block. Хотя и у него свои задачи.
+
+-->
+  <header>
+      <nav class="topnav">
+        <ul>
+        <li><a class="active" href="#home">Home</a></li>
+        <li><a href="#news">News</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#about">About</a></li>
+        <li>
+          <a href="#openModal">Открыть модальное окно</a>
+        </li>
+        </ul>
+      </nav>
+
+      <div class="nav-input">
+        <input type="text" id="name" name="name" value="text here">
+      </div>
+
+        <nav class="topnav">
+          <ul>
+            <li>
+              <div class="auth-block">
+              <img src="./assets/img/img_avatar2.png" class="profile">
+              <span>Joan</span>
+              </div>
+            </li>
+            <li><a href="#news">Sign UP</a></li>
+            <li><a href="#contact">Log In</a></li>
+            <li><a href="#about">Log Out</a></li>
+          </ul>
+        </nav>
+
+
+  </header>
+
+<!-- центр блок-->
+<div class="wrapper">
+
+
+<!-- wrapper end-->
+</div>
+
+<footer>
+  <div>
+    Develop by Asguard01
+  </div>
+</footer>
+
+
+
+<!-- Modals -->
+
+<!-- https://itchief.ru/html-and-css/modal -->
+
+<!-- Trigger/Open the Modal -->
+<!-- openModal - id модального окна (элемента div) -->
+<div id="openModal" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <h3 class="modal-title">Название</h3>
+
+        <a href="#close" title="Close" class="close">×</a>
+      </div>
+      <div class="modal-body">
+
+        <p>Содержимое модального окна...</p>
+
+        <div class="modal-input">
+          <input type="text" id="name" name="name" value="text here">
+        </div>
+        <br>
+        <button class="btn-white">Кнопка</button>
+        <button class="btn-white">Кнопка</button>
+        <button class="btn-white">Кнопка</button>
+
+        <!-- SELECT -->
+        <p>Choose your monster's features:</p>
+        <div>
+          <input type="checkbox" id="scales" name="scales" checked>
+          <label for="scales">Scales</label>
+        </div>
+        <div>
+          <input type="checkbox" id="horns" name="horns">
+          <label for="horns">Horns</label>
+        </div>
+
+        <div>
+        <input type="number" id="tentacles" name="tentacles" min="0" max="7">
+        <input type="number" id="tentacles" name="tentacles" min="0" max="24">
+        <input type="number" id="tentacles" name="tentacles" min="0" max="60">
+        </div>
+
+        <div>
+        <select name="pets" id="pet-select">
+          <option value="">--Please choose an option--</option>
+          <option value="dog">Dog</option>
+          <option value="cat">Cat</option>
+        </select>
+        </div>
+
+        <!-- RANGE -->
+        <p>Audio settings:</p>
+
+        <div>
+          <input type="range" id="volume" name="volume" min="0" max="11">
+          <label for="volume">Volume</label>
+        </div>
+
+        <div>
+          <input type="range" id="cowbell" name="cowbell" min="0" max="100" value="90" step="10">
+          <label for="cowbell">Cowbell</label>
+        </div>
+
+        <!-- RADIO-->
+        <p>Select a maintenance drone:</p>
+
+        <div>
+          <input type="radio" id="huey" name="drone" value="huey" checked>
+          <label for="huey">Huey</label>
+        </div>
+
+        <div>
+          <input type="radio" id="dewey" name="drone" value="dewey">
+          <label for="dewey">Dewey</label>
+        </div>
+
+        <div>
+          <input type="radio" id="louie" name="drone" value="louie">
+          <label for="louie">Louie</label>
+        </div>
+
+
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Modals -->
+
+
+<!-- js -->
+<script src="./assets/js/drag_drop_manager.js"></script>
+<script src="./assets/js/drag_drop_use.js"></script>
+<script src="./assets/js/modal.js"></script>
+</body>
+</html>

@@ -5,10 +5,15 @@
   <meta name="Author" content="Anton Beletsky">
   <title>Chess - Матричный процессор</title>
   <!-- CSS-->
-  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/css/main.css">
   <link rel="stylesheet" href="./assets/css/chessboard.css">
+  <link rel="stylesheet" href="./assets/css/top_nav.css">
+  <link rel="stylesheet" href="./assets/css/ui_elements.css">
+  <link rel="stylesheet" href="./assets/css/playercard.css">
+  <link rel="stylesheet" href="./assets/css/auth.css">
+
   <link rel="stylesheet" href="./assets/css/dragDemo.css">
-  <link rel="stylesheet" href="./assets/css/model.css">
+  <link rel="stylesheet" href="./assets/css/modal.css">
 </head>
 <body>
 <!--
@@ -67,44 +72,44 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
 <!-- центр блок-->
 <div class="wrapper">
 <!-- chessboard -->
-
 <section>
   <div class="container-center">
   <!-- LEFT BLOCK -->
-    <div class="lefr-block-board">
-      <br>
-      <br>
-      
-    <div class="player-card">
-      <div>
-        <img src="./assets/img/img_avatar2.png" alt="Avatar woman" class="profile">
-        <span>
-          <h2>Jane Flex</h2>
-        </span>
-        <p><span>Raiting</span><span>1200</span></p>
-        <p><span>WINS</span><span>5</span></p>
-        <img src="./assets/img/eu.svg" class="flag">
-      </div> 
-    </div>
+    <div class="left-blocks-container">
+      <div class="lefr-block-board">
+        <br>
+        <br>
+        <div class="player-card">
+         <div>
+            <img src="./assets/img/img_avatar2.png" alt="Avatar woman" class="profile">
+            <span>
+              <h2>Jane Flex</h2>
+            </span>
+            <p><span>Raiting</span><span>1200</span></p>
+            <p><span>WINS</span><span>5</span></p>
+            <img src="./assets/img/eu.svg" class="flag">
+          </div>
+        </div>
 
-    <br>
+        <br>
 
-    <div class="player-card">
-      <div>
-      <img src="./assets/img/img_avatar.png" alt="Avatar man" class="profile">
-      <span>
-        <h2>John Doe</h2>
-      </span>
-      <p><span>Raiting</span><span>1200</span></p>
-      <p><span>WINS</span><span>5</span></p>
-      <img src="./assets/img/ua.svg" class="flag">
-    </div>
-    </div>
+        <div class="player-card">
+          <div>
+            <img src="./assets/img/img_avatar.png" alt="Avatar man" class="profile">
+            <span>
+              <h2>John Doe</h2>
+            </span>
+            <p><span>Raiting</span><span>1200</span></p>
+            <p><span>WINS</span><span>5</span></p>
+            <img src="./assets/img/ua.svg" class="flag">
+          </div>
+        </div>
 
-  </div>
+    </div> <!-- <div class="lefr-block-board"> -->
+  </div> <!-- <div class="left-blocks-container"> -->
 
 <!-- CENTRAL CONTENT -->
-<main>  
+<main>
 <div class="chessboard">
   <div class="top">
     <div class="chessboard-inner">
@@ -322,14 +327,14 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
 <!-- -conatainer end-->
 
 </div>
+
 </section>
-
 <!-- chessboard end-->
-
 
 <section>
   <br>
   <br>
+  <!-- pre footer -->
   <br>
   <br>
 </section>
@@ -428,8 +433,6 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
           <input type="radio" id="louie" name="drone" value="louie">
           <label for="louie">Louie</label>
         </div>
-
-
 
       </div>
     </div>

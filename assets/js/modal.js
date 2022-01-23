@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     var scrollbar = document.body.clientWidth - window.innerWidth + 'px';
-    console.log(scrollbar);
+/*    console.log(scrollbar);*/
     document.querySelector('[href="#openModal"]').addEventListener('click', function () {
         document.body.style.overflow = 'hidden';
         document.querySelector('#openModal').style.marginLeft = scrollbar;

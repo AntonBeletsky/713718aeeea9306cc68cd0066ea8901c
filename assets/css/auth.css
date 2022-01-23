@@ -1,0 +1,22 @@
+/* auth */
+.auth-block {
+    font-size: 28px;
+    color: #f2f2f2;
+    background: #333;
+    margin-right: 10px;
+    cursor: default;
+}
+
+.auth-block span {
+    /* имя справо за картинкой*/
+    color: #b5915f;
+    display: inline;
+    text-shadow: 2px -2px 16px #032D44;
+}
+
+.auth-block span:hover {
+    color: #f2f2f2;
+    cursor: pointer;
+}
+
+/* auth end*/

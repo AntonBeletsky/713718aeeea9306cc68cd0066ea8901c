@@ -1,0 +1,84 @@
+/* https://www.w3docs.com/snippets/html/html5-page-structure.html */
+/* https://developer.mozilla.org/ru/docs/Web/CSS/CSS_Flexible_Box_Layout/Aligning_Items_in_a_Flex_Container */
+/* https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity*/
+
+/* http://htmlbook.ru/css/font-face */
+/* rules */
+@font-face {
+  font-family: font_rule1;
+  src: url("./../fonts/PlayfairDisplay-Bold.ttf");
+}
+
+html, body {
+  /*display: flex;*/
+  /*flex-wrap: wrap;*/
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  background-color: #032D44;
+  overflow-y: hidden;
+  overflow-x: hidden;
+
+}
+
+.wrapper {
+  padding-top: 18px;
+  background-color: #809159;
+  margin-top: 0px;
+  margin: 0px;
+}
+
+header {
+  /*padding: 0 10px;*/
+  background: #333;
+  display: flex;
+  justify-content: space-around;
+}
+
+footer {
+  /* display: inline-block; */
+  display: grid;
+  background-color: #333;
+  color: #ffffff;
+  font-weight: normal;
+}
+
+footer div {
+  text-align: center;
+}
+
+/* 2th wrapper :) */
+.container-center {
+  display: flex;
+  grid-auto-flow: row;
+
+  /* Сверху | Справа | Снизу | Слева */
+  padding: 20px 10px 10px 20px;
+  /* dev mode
+  color: rgb(88, 168, 85);
+  background-color: aqua;*/
+}
+
+.left-blocks-container {
+  height: 700px;
+  width: 350px;
+  padding-left: 70px;
+}
+
+
+.lefr-block-board {
+  height: 700px;
+  width: 350px;
+}
+
+.right-blocks-container {
+  height: 700px;
+  width: 350px;
+  padding-left: 70px;
+}
+
+.right-block-board {
+  height: 700px;
+  width: 350px;
+  padding-left: 70px;
+}
