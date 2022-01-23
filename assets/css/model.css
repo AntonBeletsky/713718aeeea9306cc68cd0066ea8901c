@@ -95,7 +95,7 @@
     -ms-flex-pack: justify;
     justify-content: space-between;
     padding: 15px;
-    border-bottom: 1px solid #eceeef;
+    border-bottom: thick double #b5915f;
 }
 
 .modal-title {
@@ -121,7 +121,7 @@
 
 /* свойства для кнопки "Закрыть" при нахождении её в фокусе или наведении */
 .close:focus, .close:hover {
-    color: #000;
+    color: #dbb052;
     text-decoration: none;
     cursor: pointer;
     opacity: .75;
@@ -149,4 +149,29 @@
     font-weight: bold;
     color: #ccbaa8;
     padding-bottom: 15px;
+}
+
+
+/* SCROLBAR */
+
+/* width */
+::-webkit-scrollbar {
+    width: 20px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #441a03;
+    border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #b5915f;
 }

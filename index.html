@@ -362,6 +362,65 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
         <button class="btn-white">Кнопка</button>
         <button class="btn-white">Кнопка</button>
         <button class="btn-white">Кнопка</button>
+
+        <!-- SELECT -->
+        <p>Choose your monster's features:</p>
+        <div>
+          <input type="checkbox" id="scales" name="scales" checked>
+          <label for="scales">Scales</label>
+        </div>
+        <div>
+          <input type="checkbox" id="horns" name="horns">
+          <label for="horns">Horns</label>
+        </div>
+
+        <div>
+        <input type="number" id="tentacles" name="tentacles" min="0" max="7">
+        <input type="number" id="tentacles" name="tentacles" min="0" max="24">
+        <input type="number" id="tentacles" name="tentacles" min="0" max="60">
+        </div>
+
+        <div>
+        <select name="pets" id="pet-select">
+          <option value="">--Please choose an option--</option>
+          <option value="dog">Dog</option>
+          <option value="cat">Cat</option>
+        </select>
+        </div>
+
+        <!-- RANGE -->
+        <p>Audio settings:</p>
+        
+        <div>
+          <input type="range" id="volume" name="volume" min="0" max="11">
+          <label for="volume">Volume</label>
+        </div>
+        
+        <div>
+          <input type="range" id="cowbell" name="cowbell" min="0" max="100" value="90" step="10">
+          <label for="cowbell">Cowbell</label>
+        </div>
+
+        <!-- RADIO-->
+        <p>Select a maintenance drone:</p>
+        
+        <div>
+          <input type="radio" id="huey" name="drone" value="huey" checked>
+          <label for="huey">Huey</label>
+        </div>
+        
+        <div>
+          <input type="radio" id="dewey" name="drone" value="dewey">
+          <label for="dewey">Dewey</label>
+        </div>
+        
+        <div>
+          <input type="radio" id="louie" name="drone" value="louie">
+          <label for="louie">Louie</label>
+        </div>
+
+
+
       </div>
     </div>
   </div>
