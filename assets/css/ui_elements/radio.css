@@ -1,0 +1,87 @@
+/* RADIO BOX ////////////////////////////////////////////////////*/
+
+.radio-container {
+    /*margin-bottom: 0.2em;*/
+    background-color: #b5915f;
+    color: #441a03;
+    border: #441a03;
+    /* Сверху | Справа | Снизу | Слева */
+    padding: 5px 0px 2px 8px;
+    margin: 2px 2px 2px 2px;
+    font-weight: bolder;
+    width: 200px;
+    /*height: 35px;*/
+}
+
+.radio-container:hover {
+    background-color: #a78556;
+}
+
+/* для элемента input c type="radio" */
+.custom-radio>input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+
+/* для элемента label связанного с .custom-radio */
+.custom-radio>span {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+}
+
+/* создание в label псевдоэлемента  before со следующими стилями */
+.custom-radio>span::before {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+    flex-grow: 0;
+    border: 1px solid #441a03;
+    border-radius: 50%;
+    margin-right: 0.5em;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50% 50%;
+}
+
+/* стили при наведении курсора на радио */
+.custom-radio>input:not(:disabled):not(:checked)+span:hover::before {
+    border-color: #441a03;
+    box-shadow: inset 0 0 5px #441a03;
+}
+
+/* стили для активной радиокнопки (при нажатии на неё) */
+.custom-radio>input:not(:disabled):active+span::before {
+    background-color: #b5915f;
+    border-color: #441a03;
+}
+
+/* стили для радиокнопки, находящейся в фокусе */
+.custom-radio>input:focus+span::before {
+    /*box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);*/
+}
+
+/* стили для радиокнопки, находящейся в фокусе и не находящейся в состоянии checked */
+.custom-radio>input:focus:not(:checked)+span::before {
+    border-color: #441a03;
+}
+
+/* стили для радиокнопки, находящейся в состоянии checked */
+.custom-radio>input:checked+span::before {
+    border-color: #441a03;
+    background-color: #441a03;
+    /* галочка*/
+    background-image: url('./../../img/figures/White_Queen.svg');
+    background-size: 0.5cm;
+}
+
+/* стили для радиокнопки, находящейся в состоянии disabled */
+.custom-radio>input:disabled+span::before {
+    background-color: #bda584;
+}
+
+
+/* RADIO BOX END */

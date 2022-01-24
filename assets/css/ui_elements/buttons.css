@@ -1,0 +1,61 @@
+/* BUTTONS */
+.btn-green, .btn-blue, .btn-red, .btn-black, .btn-white {
+    border: none;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: bolder;
+    margin: 2px 2px;
+    cursor: pointer;
+}
+
+.btn-green {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-green:hover {
+    color: #000000;
+}
+
+.btn-blue {
+    background-color: #008CBA;
+    color: white;
+}
+
+.btn-blue:hover {
+    color: #000000;
+}
+
+.btn-red {
+    background-color: #f44336;
+    color: white;
+}
+
+.btn-red:hover {
+    color: #000000;
+}
+
+.btn-black {
+    background-color: #441a03;
+    color: #b5915f;
+}
+
+.btn-black:hover {
+    color: white;
+}
+
+.btn-white {
+    background-color: #b5915f;
+    color: #441a03;
+}
+
+.btn-white:hover {
+    /*background-color: #a78556;*/
+    color: #dbb052;
+    background-color: #966b54;
+}
+
+/* BUTTONS END */
