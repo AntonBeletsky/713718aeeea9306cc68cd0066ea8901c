@@ -23,6 +23,8 @@
   <link rel="stylesheet" href="./assets/css/ui_elements/radio.css">
   <link rel="stylesheet" href="./assets/css/ui_elements/range.css">
   <link rel="stylesheet" href="./assets/css/ui_elements/selectbox.css">
+
+  <link rel="stylesheet" href="./assets/css/ui_elements/movesbox.css">
   
 </head>
 <body>
@@ -85,11 +87,10 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
 <section>
   <div class="container-center">
   <!-- LEFT BLOCK -->
-    <div class="left-blocks-container">
-      <div class="lefr-block-board">
+      <div class="container-blocks">
+
         <br>
-        <br>
-        <div class="player-card">
+        <div class="container-box black-box player-card">
          <div>
             <img src="./assets/img/img_avatar2.png" alt="Avatar woman" class="profile">
             <span>
@@ -102,8 +103,7 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
         </div>
 
         <br>
-
-        <div class="player-card">
+        <div class="container-box black-box player-card">
           <div>
             <img src="./assets/img/img_avatar.png" alt="Avatar man" class="profile">
             <span>
@@ -115,8 +115,7 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
           </div>
         </div>
 
-    </div> <!-- <div class="lefr-block-board"> -->
-  </div> <!-- <div class="left-blocks-container"> -->
+      </div> <!-- <div class="container-blocks "> -->
 
 <!-- CENTRAL CONTENT -->
 <main>
@@ -224,7 +223,7 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
 </main>
 
 <!-- right-block -->
-<div class="right-block-board">
+<div class="moves-container">
   <div class="moves-header">
     <div class="moves-header-sub2">
       <h1>Запись Партии</h1>
@@ -321,12 +320,12 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
 
 </div>
 
-<div class="right-blocks-container">
+<div class="container-blocks">
 
   <br>
   <br>
 
-  <div class="black-box">
+  <div class="container-box black-box">
       блоки
       
       блоки
@@ -340,7 +339,7 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
       всякая фигня
   </div>
 
-  <div class="black-box">
+  <div class="container-box black-box">
       блоки
     
       блоки
@@ -354,7 +353,7 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
       всякая фигня
   </div>
 
-  <div class="black-box">
+  <div class="container-box black-box">
 .black-box {
 /*height: 300px;*/
 width: 300px;

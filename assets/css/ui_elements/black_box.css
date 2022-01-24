@@ -1,11 +1,13 @@
-
 .black-box {
     /*height: 300px;*/
-    width: 300px;
+    /*width: 300px;*/
+
     background-color: #441a03;
     border: thick double #b5915f;
     box-shadow: 5px -5px 10px 5px #032D44;
     color: #b5915f;
+
+    /*
     font-size: 22px;
     display: inline-block;
     padding-top: 15px;
@@ -13,4 +15,9 @@
     padding-bottom: 20px;
     padding-right: 10px;
     margin-bottom: 30px;
+    */
+}
+
+.black-box:hover {
+
 }
