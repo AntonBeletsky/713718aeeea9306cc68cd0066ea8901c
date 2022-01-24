@@ -234,3 +234,53 @@
 
 
 /* RADIO BOX END */
+
+/* https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_rangeslider */
+/* RANGE */
+.range_container {
+    width: 100%;
+}
+
+.range_container>input {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 25px;
+    background: var(--button-back-color);
+    outline: none;
+    opacity: 1;
+    /* не прозрачнолсть 0,7 */
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+
+.range_container>input:hover {
+    opacity: 1;
+    /* не прозрачное совсем*/
+}
+
+.range_container>input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 35px;
+    height: 35px;
+    /*background: var(--button-content2-color);*/
+    background: url('./../img/figures/White_Queen.svg');
+    background-color: #441a03;
+    background-size: 0.8cm;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    border: 2px solid #b5915f;
+
+}
+
+
+.range_container>input::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    background: #040faa;
+    cursor: pointer;
+}
+
+
+/* RANGE END */

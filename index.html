@@ -461,16 +461,14 @@ margin-bottom: 30px;
         </div>
 
         <!-- RANGE -->
-        <p>Audio settings:</p>
+        <h1>Custom Range Slider</h1>
         
-        <div>
-          <input type="range" id="volume" name="volume" min="0" max="11">
-          <label for="volume">Volume</label>
-        </div>
-        
-        <div>
-          <input type="range" id="cowbell" name="cowbell" min="0" max="100" value="90" step="10">
-          <label for="cowbell">Cowbell</label>
+        <p>Default range slider:</p>
+        <input type="range" min="1" max="100" value="50">
+
+        <div class="range_container ">
+          <p>Custom range slider:</p>
+          <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
         </div>
 
         <!-- RADIO-->
