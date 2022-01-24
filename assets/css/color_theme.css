@@ -1,0 +1,44 @@
+/* 
+https://habr.com/ru/company/ruvds/blog/523370/
+https://habr.com/ru/company/skillfactory/blog/523130/
+
+:root {
+  --primary-color: #222;
+  --_primary-color: #222;
+  --12-primary-color: #222;
+  --primay-color-12: #222;
+}
+
+.section-title {
+  color: var(--primary-color, #222);
+}
+
+*/
+
+/* theme one */
+
+:root {
+    /* container */
+
+    /* windows */
+    --window-back-color: #441a03;
+    --window-content-color: #b5915f;
+    --window-border-color1: #b5915f;
+    --window-border-color2: #441a03;
+
+    /* buttons-* */
+    --button-back-color: #b5915f;
+    --button-content-color: #441a03;
+    --button-border-color: #441a03;
+
+    /* table */
+
+    /* wrapper */
+
+    /* body */
+
+    /* chessboard */
+
+    /* navbar */
+
+}

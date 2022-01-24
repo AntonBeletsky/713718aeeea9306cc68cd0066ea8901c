@@ -5,6 +5,7 @@
   <meta name="Author" content="Anton Beletsky">
   <title>Chess - Матричный процессор</title>
   <!-- CSS-->
+  <link rel="stylesheet" href="./assets/css/color_theme.css">
   <link rel="stylesheet" href="./assets/css/main.css">
   <link rel="stylesheet" href="./assets/css/chessboard.css">
   <link rel="stylesheet" href="./assets/css/top_nav.css">
@@ -428,7 +429,7 @@ margin-bottom: 30px;
         </div>
         <div class="checkbox-container">
           <label class="custom-checkbox">
-            <input type="checkbox" value="value-1">
+            <input type="checkbox" value="value-1" disabled>
             <span>bla</span>
           </label>
         </div>
@@ -473,22 +474,40 @@ margin-bottom: 30px;
         </div>
 
         <!-- RADIO-->
-        <p>Select a maintenance drone:</p>
-        
-        <div>
-          <input type="radio" id="huey" name="drone" value="huey" checked>
-          <label for="huey">Huey</label>
-        </div>
-        
-        <div>
-          <input type="radio" id="dewey" name="drone" value="dewey">
-          <label for="dewey">Dewey</label>
-        </div>
-        
-        <div>
-          <input type="radio" id="louie" name="drone" value="louie">
-          <label for="louie">Louie</label>
-        </div>
+          <div class="radio-container">
+            <label class="custom-radio">
+              <input type="radio" name="color" value="indigo">
+              <span>Indigo</span>
+            </label>
+          </div>
+          
+          <div class="radio-container">
+            <label class="custom-radio">
+              <input type="radio" name="color" value="red">
+              <span>Red</span>
+            </label>
+          </div>
+          
+          <div class="radio-container">
+            <label class="custom-radio">
+              <input type="radio" name="color" value="brown" disabled="disabled">
+              <span>Brown</span>
+            </label>
+          </div>
+          
+          <div class="radio-container">
+            <label class="custom-radio">
+              <input type="radio" name="color" value="yellow">
+              <span>Yellow</span>
+            </label>
+          </div>
+          
+          <div class="radio-container">
+            <label class="custom-radio">
+              <input type="radio" name="color" value="green">
+              <span>Green</span>
+            </label>
+          </div>
 
       </div>
     </div>
