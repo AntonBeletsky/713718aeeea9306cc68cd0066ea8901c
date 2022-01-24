@@ -38,12 +38,13 @@
 }
 
 
-
+/*
 .range_container>input::-moz-range-thumb {
     width: 25px;
     height: 25px;
     background: #040faa;
     cursor: pointer;
 }
+*/
 
 /* RANGE END */
