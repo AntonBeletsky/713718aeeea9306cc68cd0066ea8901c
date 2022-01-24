@@ -31,7 +31,10 @@ s - small
     margin-bottom: 30px;
 }
 
-.container-box:hover {}
+/*
+.container-box:hover {
+}
+*/
 
 /*
  .moves-container in movesbox.css
