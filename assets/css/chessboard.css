@@ -20,6 +20,18 @@
   align-items: strech;
 }
 
+.piece-inner {
+  text-align: center;
+  align-self: center;
+  font-weight: bolder;
+  font-size: 18px;
+
+}
+
+.piece-inner>span {
+  text-shadow: 3px -3px 18px #bdb145;
+}
+
 .piece {
   background-color: #b5915f;
   color: #000;
@@ -31,10 +43,7 @@
   border-radius: 3px;
 }
 
-.piece-inner {
-  text-align: center;
-  align-self: center;
-}
+
 
 .piece-green {
   border: #13c91c solid 5px;
@@ -45,6 +54,31 @@
   border: #ec2112 solid 5px;
   border-radius: 3px;
 }
+
+/* https://developer.mozilla.org/ru/docs/Web/CSS/CSS_Selectors */
+.piece:nth-child(2)~div:nth-child(-2n+9),
+/* выбрать 9 клетку, выбирать каждую вторую до 16 */
+.piece:nth-child(9)~div:nth-child(-2n+16),
+.piece:nth-child(17)~div:nth-child(-2n+25),
+.piece:nth-child(25)~div:nth-child(-2n+32),
+.piece:nth-child(33)~div:nth-child(-2n+41),
+.piece:nth-child(41)~div:nth-child(-2n+48),
+.piece:nth-child(49)~div:nth-child(-2n+57),
+.piece:nth-child(57)~div:nth-child(-2n+64) {
+  background-color: #441a03;
+  color: #fff;
+  text-align: center;
+}
+
+/* https://developer.mozilla.org/ru/docs/Web/CSS/CSS_Selectors */
+/* выбрать 9 клетку, выбирать каждую вторую до 16 */
+/*.piece:nth-child(8)~div:nth-child(-3n+16),
+.piece:nth-child(16)~div:nth-child(-3n+25){
+  background-color: #3d7051;
+  color: #fff;
+  text-align: center;
+}*/
+
 
 .top,
 .bottom {
@@ -67,19 +101,7 @@
   grid-row-end: 10;
 }
 
-/* https://developer.mozilla.org/ru/docs/Web/CSS/CSS_Selectors */
 
-.piece:nth-child(-2n+9),
-.piece:nth-child(9)~div:nth-child(-2n+16),
-.piece:nth-child(17)~div:nth-child(-2n+25),
-.piece:nth-child(25)~div:nth-child(-2n+32),
-.piece:nth-child(33)~div:nth-child(-2n+41),
-.piece:nth-child(41)~div:nth-child(-2n+48),
-.piece:nth-child(49)~div:nth-child(-2n+57),
-.piece:nth-child(57)~div:nth-child(-2n+64) {
-  background-color: #441a03;
-  color: #fff;
-}
 
 img.figure {
   width: 70px;
