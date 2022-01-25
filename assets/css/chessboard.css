@@ -28,7 +28,7 @@
   grid-area: c;
 }
 
-.cifra {
+.chessboard-number {
   width: 40px;
   height: 70px;
   background-color: #7d694c;
@@ -38,7 +38,7 @@
   font-size: 18px;
 }
 
-.cifra>div {
+.chessboard-number>div {
   padding-top: 20px;
   text-shadow: 3px -3px 18px #bdb145;
 }
@@ -94,20 +94,27 @@
 }
 
 .piece:hover {
-  border: #978e8d solid 1px;
-  border-radius: 3px;
+  border: white solid 2px !important;
+  /*border: #978e8d solid 1px;*/
+  border-radius: 2px;
 }
 
-
-
 .piece-green {
-  border: #13c91c solid 5px;
-  border-radius: 3px;
+  border: #13c91c solid 5px !important;
+  border-radius: 2px;
 }
 
 .piece-red {
-  border: #ec2112 solid 5px;
-  border-radius: 3px;
+  border: #ec2112 solid 5px !important;
+  border-radius: 2px;
+}
+
+.chessboard>.top>.chessboard-inner>.piece-inner {
+  transform: rotate(180deg);
+}
+
+.right-box-chessboard>.chessboard-number {
+  transform: rotate(180deg);
 }
 
 /* https://developer.mozilla.org/ru/docs/Web/CSS/CSS_Selectors */
@@ -125,6 +132,8 @@
   text-align: center;
 }
 
+/* добавить деморкационную линию*/
+
 /* https://developer.mozilla.org/ru/docs/Web/CSS/CSS_Selectors */
 /* выбрать 9 клетку, выбирать каждую вторую до 16 */
 /*.piece:nth-child(8)~div:nth-child(-3n+16),
@@ -133,6 +142,15 @@
   color: #fff;
   text-align: center;
 }*/
+
+.piece:nth-child(25)~div:nth-child(-1n+33) {
+  border-bottom: 1px solid gray;
+}
+
+.piece:nth-child(33)~div:nth-child(-1n+41) {
+  border-top: 1px solid gray;
+}
+
 
 
 .top,
