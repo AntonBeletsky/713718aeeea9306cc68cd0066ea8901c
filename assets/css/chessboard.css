@@ -91,6 +91,7 @@
   background-color: #b5915f;
   color: #000;
   text-align: center;
+  /*background: linear-gradient(to bottom right, #b5915f, #8a6f47);*/
 }
 
 .piece:hover {
@@ -128,6 +129,7 @@
 .piece:nth-child(49)~div:nth-child(-2n+57),
 .piece:nth-child(57)~div:nth-child(-2n+64) {
   background-color: #441a03;
+  /*background: linear-gradient(to bottom right, #441a03, #301508);*/
   color: #fff;
   text-align: center;
 }

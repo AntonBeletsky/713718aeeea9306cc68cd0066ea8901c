@@ -3,6 +3,26 @@
 }
 
 .post-drop {
-  /* background-image: url("./../img/Лангольеры-кадр.jpg"); */
-  background-color: chartreuse !important;
+  /*background-color: chartreuse !important;*/
+  /*background: linear-gradient(to bottom right, #518547, #5eb465) !important;*/
+
+  /*background-color: #3ffd2d !important;
+  opacity: 0.4 !important;*/
+
+  background-color: #3efd2d56 !important;
+}
+
+.post-drop-true {
+  background-color: #3efd2d56 !important;
+
+  /*background-color: chartreuse !important;*/
+  /*opacity: 0.4 !important;*/
+  /*background: linear-gradient(to bottom right, #518547, #5eb465);*/
+}
+
+.post-drop-false {
+  background-color: #f5101096 !important;
+
+  /*opacity: 0.4 !important;*/
+  /*background: linear-gradient(to bottom right, #fc0808, #e43636);*/
 }
