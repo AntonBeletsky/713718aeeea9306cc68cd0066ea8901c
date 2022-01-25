@@ -61,8 +61,8 @@
     color: #000000;
     font-size: 20px;
     border: solid #441a03;
-    /*border: thick double #b5915f;*/
     box-shadow: 5px -5px 10px 5px #032D44;
+    text-shadow: 1px -1px 22px #9e943b;
     font-weight: bold;
     height: 50px;
 }
@@ -73,7 +73,6 @@
     margin-left: 1px;
     margin-right: 1px;
     border-width: 2px;
-
     padding: 0px;
     border: solid #b5915f;
 }
