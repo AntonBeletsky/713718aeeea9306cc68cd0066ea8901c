@@ -1,27 +1,37 @@
 .container-chessboard {
   display: grid;
-  background-color: #ec2112;
+  background-color: #00000000;
   /* debug не видно*/
   grid-template-areas: "a b c";
-  box-shadow: 5px -5px 10px 5px #032D44;
-  margin-left: 50px;
-  border: 50px solid #462921;
+  /* box-shadow: 5px -5px 10px 5px #032D44; */
+  margin: 0px 0px 0px 0px;
+  border: 10px ridge #462921;
 }
 
+.container-chessboard-up2 {
+  border: 10px outset #462921;
+  padding: 2px;
+  background-color: #b5915f;
+  box-shadow: 5px -5px 10px 5px #032D44;
+  margin-left: 50px;
+}
+
+
+
 .left-box-chessboard {
-  background-color: aqua;
+  background-color: #7d694c;
   grid-area: a;
 }
 
 .right-box-chessboard {
-  background-color: aqua;
+  background-color: #7d694c;
   grid-area: c;
 }
 
 .cifra {
   width: 40px;
   height: 70px;
-  background-color: rgb(204, 154, 206);
+  background-color: #7d694c;
   text-align: center;
   align-self: center;
   font-weight: bolder;
@@ -30,11 +40,12 @@
 
 .cifra>div {
   padding-top: 20px;
+  text-shadow: 3px -3px 18px #bdb145;
 }
 
 .chessboard-spacer {
   height: 40px;
-  background-color: #13c91c;
+  background-color: #7d694c;
 }
 
 
