@@ -16,6 +16,11 @@ https://habr.com/ru/company/skillfactory/blog/523130/
 */
 
 /* theme one */
+/* rules */
+@font-face {
+  font-family: font_rule1;
+  src: url("./../fonts/PlayfairDisplay-Bold.ttf");
+}
 
 :root {
   /* container */
@@ -28,7 +33,8 @@ https://habr.com/ru/company/skillfactory/blog/523130/
 
   /* buttons-container* */
   --button-back-color: #b5915f;
-  --button-back-color2: #a78556; /* hover */
+  --button-back-color2: #a78556;
+  /* hover */
   --button-border-color: #441a03;
 
   /* buttons content */

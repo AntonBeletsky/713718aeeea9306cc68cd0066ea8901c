@@ -3,11 +3,7 @@
 /* https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity*/
 
 /* http://htmlbook.ru/css/font-face */
-/* rules */
-@font-face {
-  font-family: font_rule1;
-  src: url("./../fonts/PlayfairDisplay-Bold.ttf");
-}
+
 
 html, body {
   /*display: flex;*/
