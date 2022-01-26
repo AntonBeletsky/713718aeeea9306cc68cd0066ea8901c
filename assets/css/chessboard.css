@@ -8,15 +8,13 @@
   border: 10px ridge #462921;
 }
 
-.container-chessboard-up2 {
+.container-chessboard-up2-border {
   border: 10px outset #462921;
   padding: 2px;
   background-color: #b5915f;
   box-shadow: 5px -5px 10px 5px #032D44;
   margin-left: 50px;
 }
-
-
 
 .left-box-chessboard {
   background-color: #7d694c;
@@ -47,8 +45,6 @@
   height: 40px;
   background-color: #7d694c;
 }
-
-
 
 
 .chessboard {
@@ -134,17 +130,6 @@
   text-align: center;
 }
 
-/* добавить деморкационную линию*/
-
-/* https://developer.mozilla.org/ru/docs/Web/CSS/CSS_Selectors */
-/* выбрать 9 клетку, выбирать каждую вторую до 16 */
-/*.piece:nth-child(8)~div:nth-child(-3n+16),
-.piece:nth-child(16)~div:nth-child(-3n+25){
-  background-color: #3d7051;
-  color: #fff;
-  text-align: center;
-}*/
-
 .piece:nth-child(25)~div:nth-child(-1n+33) {
   border-bottom: 1px solid gray;
 }
@@ -152,8 +137,6 @@
 .piece:nth-child(33)~div:nth-child(-1n+41) {
   border-top: 1px solid gray;
 }
-
-
 
 .top,
 .bottom {
@@ -176,8 +159,6 @@
   grid-row-end: 10;
 }
 
-
-
 img.figure {
   width: 70px;
   height: 70px;
@@ -192,4 +173,60 @@ img.figure:hover {
 
 .draggable {
   cursor: pointer;
+}
+
+/* https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
+
+.chessboard-footer-container {
+  display: flex;
+  margin-top: 12px;
+  justify-content: center;
+}
+
+.chessboard-input {
+  order: 1;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.chessboard-button-container {
+  order: 2;
+}
+
+.chessboard-input>input {
+  height: 30px;
+  width: 300px;
+  background-color: hsla(120, 93%, 79%, 0);
+  border: #000000;
+  border-bottom: solid;
+  outline: none;
+  font-size: 28px;
+  font-weight: bold;
+  color: #032D44;
+  padding-bottom: 15px;
+}
+
+.btm-chessboard {
+  /*box-shadow: 3px 3px 0 #032D44 inset, -3px -3px 0 #032D44 inset;*/
+
+  border: 3px #032D44 solid;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: bolder;
+  margin: 2px 2px;
+  cursor: pointer;
+  transition: .3s linear;
+
+  background-color: hsla(120, 93%, 79%, 0);
+  color: #032D44;
+
+}
+
+.btm-chessboard:hover {
+  text-shadow: 5px -5px 25px #032D44;
+  background-color: #032D4410;
+  /*box-shadow: 1px -1px 2px 1px #032D44;*/
 }

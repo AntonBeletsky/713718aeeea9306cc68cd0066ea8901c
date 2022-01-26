@@ -120,12 +120,10 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
 <!-- CENTRAL CONTENT -->
 <main>
 
-<div class="container-chessboard-up2">
+<div class="container-chessboard-up2-border"> <!-- border -->
 <div class="container-chessboard">
   
-  
 <div class="left-box-chessboard">
-
   <div class="chessboard-spacer"></div>
   <div class="chessboard-number">
     <div>8</div>
@@ -152,7 +150,6 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
     <div>1</div>
   </div>
   <div class="chessboard-spacer"></div>
-
 </div>
 
 <div class="chessboard">
@@ -291,8 +288,19 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
 </div>
 
 </div> <!-- container chesboard end -->
-</div> <!-- sub-->
+</div> <!-- border-->
 
+<div class="chessboard-footer-container">
+
+  <div class="chessboard-input">
+      <input type="text" id="name" name="name" value="e2-e4">
+  </div>
+
+  <div class="chessboard-button-container">
+    <button class="btm-chessboard">Походить</button>
+  </div>
+  
+</div>
 
 </main>
 
@@ -452,14 +460,6 @@ margin-bottom: 30px;
 
 </section>
 <!-- chessboard end-->
-
-<section>
-  <br>
-  <br>
-  <!-- pre footer -->
-  <br>
-  <br>
-</section>
 
 
 <!-- wrapper end-->
