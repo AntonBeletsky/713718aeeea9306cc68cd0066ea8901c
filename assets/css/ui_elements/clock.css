@@ -1,11 +1,44 @@
+div>.clock-box{
+    
+}
+
 .clock-box {
-    margin: 0px 0px 0px 0px;
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+
+
     padding-bottom: 5px;
-    padding-left: 25px;
+    padding-left: 10px;
+    padding-right: 10px;
     padding-top: 10px;
+    /*background-color: #476345;*/
+    background: #292929;
+    color: #000;
+    border: #292929 ridge 5px;
 }
 
 .clock {
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+
     font-family: digital_numbers;
     font-size: 70px;
+    background: #827B5E;
+    color: #000;
+    letter-spacing: 5px; /* отступі между ціфрами */
+    border: #292929 ridge 1px;
+    margin: 0px;
 }
+
+
+/*
+    background: #292929;
+
+    background: #827B5E;
+    color: #000;
+
+*/

@@ -59,11 +59,22 @@ div.profile {
 }
 
 img.flag {
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin-top: 10px;
+    margin-bottom: 5px;
     margin-left: 10px;
-    width: 170px;
-    height: 70px;
+    width: 100px;
+    height: 75px;
+    border: #b5915f outset 3px;
 }
+
+span.wins{
+    font-size: 60px;
+    margin-top: 15px;
+    /* font-family: Verdana, Geneva, Tahoma, sans-serif;*/ 
+
+    /*margin-bottom: 30px;
+    padding-bottom: 20px;*/
+}
+
 
 /* player cards  end*/
