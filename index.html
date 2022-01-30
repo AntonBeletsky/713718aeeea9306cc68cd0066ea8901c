@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="./assets/css/main.css">
   <link rel="stylesheet" href="./assets/css/chessboard.css">
   <link rel="stylesheet" href="./assets/css/top_nav.css">
+  <link rel="stylesheet" href="./assets/css/top_nav_dropdown.css">
+  <link rel="stylesheet" href="./assets/css/navbar.css">
   <link rel="stylesheet" href="./assets/css/playercard.css">
   <link rel="stylesheet" href="./assets/css/auth.css">
   <link rel="stylesheet" href="./assets/css/dragDemo.css">
@@ -47,39 +49,51 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
 Кстати, ещё можно использовать inline-block. Хотя и у него свои задачи.
 
 -->
-  <header>
-    
-      <nav class="topnav">
-        <ul>
-        <li><a class="active" href="#home">Home</a></li>
-        <li><a href="#news">News</a></li>
-        <li><a href="#contact">Contact</a></li>
-        <li><a href="#about">About</a></li>
-        <li>
-          <a href="#openModal">Открыть модальное окно</a>
-        </li>
-        </ul>
-      </nav>
-<!--
-      <div class="nav-input">
-        <input type="text" id="name" name="name" value="text here">
-      </div>
+<header>
+
+<!-- nav  -->
+<div class="navbar">
+  <a href="#home" class="active">Home</a>
+  <a href="#openModal">Открыть модальное окно</a>
+  <div class="dropdown">
+    <button class="dropbtn">Меню</button>
+    <div class="dropdown-content">
+      <a href="#">Link 1</a>
+      <a href="#">Link 2</a>
+      <a href="#openModal">Открыть модальное окно</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- auth -->
+<!-- TODO: свести top nav и nav bar 
+<div class="navbar">
+  <div class="auth-block">
+    <img src="./assets/img/img_avatar2.png" class="profile">
+    <span>Joan</span>
+  </div>
+  <a href="#home">Home</a>
+  <a href="#openModal">Открыть модальное окно</a>
+</div>
 -->
-        <nav class="topnav">
-          <ul>
-            <li>
-              <div class="auth-block">
-              <img src="./assets/img/img_avatar2.png" class="profile">
-              <span>Joan</span>
-              </div>
-            </li>
-            <li><a href="#news">Sign UP</a></li>
-            <li><a href="#contact">Log In</a></li>
-            <li><a href="#about">Log Out</a></li>
-          </ul>
-        </nav>
-    
-  </header>
+
+<nav class="topnav">
+  <ul>
+    <li>
+      <div class="auth-block">
+      <img src="./assets/img/img_avatar2.png" class="profile">
+      <span>Joan</span>
+      </div>
+    </li>
+    <li><a href="#news">Sign UP</a></li>
+    <li><a href="#contact">Log In</a></li>
+    <li><a href="#about">Log Out</a></li>
+  </ul>
+</nav>
+
+
+</header>
 
 <!-- центр блок-->
 <div class="wrapper">
@@ -436,21 +450,14 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
   </div>
 
   <div class="container-box black-box">
-.black-box {
-/*height: 300px;*/
-width: 300px;
-background-color: #441a03;
-border: thick double #b5915f;
-box-shadow: 5px -5px 10px 5px #032D44;
-color: #b5915f;
-font-size: 22px;
-display: inline-block;
-padding-top: 15px;
-padding-left: 20px;
-padding-bottom: 20px;
-padding-right: 10px;
-margin-bottom: 30px;
-}
+text texttext texttext texttext texttext texttext text 
+text texttext texttext texttext texttext texttext text
+text texttext texttext texttext texttext texttext text
+text texttext texttext texttext texttext texttext text
+text texttext texttext texttext texttext texttext text
+text texttext texttext texttext texttext texttext text
+text texttext texttext texttext texttext texttext text
+text texttext texttext texttext texttext texttext text
   </div>
 
 </div>
@@ -470,7 +477,6 @@ margin-bottom: 30px;
     Develop by Asguard01
   </div>
 </footer>
-
 
 
 <!-- Modals -->
@@ -542,11 +548,6 @@ margin-bottom: 30px;
         </div>
 
         <!-- RANGE -->
-        <h1>Custom Range Slider</h1>
-        
-        <p>Default range slider:</p>
-        <input type="range" min="1" max="100" value="50">
-
         <div class="range_container ">
           <p>Custom range slider:</p>
           <input type="range" min="1" max="100" value="50" class="slider" id="myRange">

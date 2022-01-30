@@ -6,7 +6,6 @@ ul li {
     list-style: none;
 }
 
-
 /* navbar */
 /* Add a black background color to the top navigation */
 .topnav {
@@ -18,7 +17,7 @@ ul li {
 }
 
 /* Style the links inside the navigation bar */
-.topnav a {
+.topnav a  {
     float: left;
     color: #b5915f;
     text-align: center;
@@ -55,5 +54,7 @@ ul li {
     color: #a5b3a5;
     padding-bottom: 15px;
 }
+
+
 
 /* navbar end*/
