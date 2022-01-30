@@ -1,0 +1,11 @@
+.clock-box {
+    margin: 0px 0px 0px 0px;
+    padding-bottom: 5px;
+    padding-left: 25px;
+    padding-top: 10px;
+}
+
+.clock {
+    font-family: digital_numbers;
+    font-size: 70px;
+}

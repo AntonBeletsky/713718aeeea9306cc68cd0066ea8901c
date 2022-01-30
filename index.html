@@ -25,6 +25,8 @@
   <link rel="stylesheet" href="./assets/css/ui_elements/selectbox.css">
 
   <link rel="stylesheet" href="./assets/css/ui_elements/movesbox.css">
+
+  <link rel="stylesheet" href="./assets/css/ui_elements/clock.css">
   
 </head>
 <body>
@@ -89,30 +91,49 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
   <!-- LEFT BLOCK -->
       <div class="container-blocks">
 
-        <br>
         <div class="container-box black-box player-card">
-         <div>
+         
+            <div>
             <img src="./assets/img/img_avatar2.png" alt="Avatar woman" class="profile">
             <span>
               <h2>Jane Flex</h2>
             </span>
-            <p><span>Raiting</span><span>1200</span></p>
-            <p><span>WINS</span><span>5</span></p>
+            </div>
+
+            <div class="profile">
+              <span>Raiting</span><span>1200</span>
+              <span>WINS</span><span>5</span>
+            </div>
+
             <img src="./assets/img/eu.svg" class="flag">
-          </div>
+            
+            <div class="clock-box">
+              <div class="clock" id="clock1">
+                03:45:50
+              </div>
+            </div>
+
         </div>
 
         <br>
+
         <div class="container-box black-box player-card">
-          <div>
+            <div>
             <img src="./assets/img/img_avatar.png" alt="Avatar man" class="profile">
             <span>
               <h2>John Doe</h2>
             </span>
-            <p><span>Raiting</span><span>1200</span></p>
-            <p><span>WINS</span><span>5</span></p>
+            </div>
+            <div>
+              <span>Raiting</span><span>1200</span>
+              <span>WINS</span><span>5</span>
+            </div>
             <img src="./assets/img/ua.svg" class="flag">
-          </div>
+            <div class="clock-box">
+              <div class="clock" id="clock2">
+                03:45:50
+              </div>
+            </div>
         </div>
 
       </div> <!-- <div class="container-blocks "> -->
@@ -599,6 +620,7 @@ text texttext texttext texttext texttext texttext text
 <script src="./assets/js/drag_drop_use.js"></script>
 <script src="./assets/js/modal.js"></script>
 <script src="./assets/js/select_box.js"></script>
+<script src="./assets/js/clock.js"></script>
 
 </body>
 </html>

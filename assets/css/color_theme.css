@@ -22,6 +22,11 @@ https://habr.com/ru/company/skillfactory/blog/523130/
   src: url("./../fonts/PlayfairDisplay-Bold.ttf");
 }
 
+@font-face {
+  font-family: digital_numbers;
+  src: url("./../fonts/digital-7.ttf");
+}
+
 :root {
   /* container */
 

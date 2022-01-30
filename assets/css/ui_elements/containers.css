@@ -25,11 +25,20 @@
     margin-bottom: 30px;
 }
 
-/*
-.container-box:hover {
-}
-*/
+/* https://developer.mozilla.org/ru/docs/Web/CSS/display */
 
-/*
- .moves-container in movesbox.css
-*/
+
+.container-mini{
+    display: flex;
+
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+.container-mini>div {
+    margin: unset;
+    padding: unset;
+    width: unset;
+    height: unset;
+    
+}
