@@ -1,6 +1,10 @@
 /* for dropdown */
 
-/* Navbar container */
+ul li {
+    display: inline-block;
+    /*padding: 0 0px;*/
+    list-style: none;
+}
 
 .navbar {
     background-color: #333;
@@ -87,5 +91,18 @@
 /* Show the dropdown menu on hover */
 .dropdown:hover .dropdown-content {
     display: block;
+}
+
+.nav-input input {
+    height: 30px;
+    width: 300px;
+    background-color: hsla(120, 93%, 79%, 0);
+    border: #000000;
+    border-bottom: solid;
+    outline: none;
+    font-size: 28px;
+    font-weight: bold;
+    color: #a5b3a5;
+    padding-bottom: 15px;
 }
 
