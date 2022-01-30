@@ -23,7 +23,7 @@ img.profile {
 }
 
 .player-card { /* .player-card div{ */
-    /* margin: 20px;*/ 
+    /*text-shadow: 5px -5px 5px #032D44;*/
 }
 
 div>.profile {
@@ -43,18 +43,17 @@ div.profile {
     /*margin: 20px;*/
 }
 
-.player-card span {
+.player-card>span {
     font-size: 28px;
     margin-left: 10px;
     /* бомба текст*/
     text-shadow: 5px -5px 5px #032D44;
-
 }
 
 .player-card span h2 {
     /* имя справо за картинкой*/
     display: inline;
-    
+    text-shadow: 5px -5px 5px #032D44;
     /*margin: 20px;*/
 }
 
@@ -67,13 +66,35 @@ img.flag {
     border: #b5915f outset 3px;
 }
 
-span.wins{
-    font-size: 60px;
-    margin-top: 15px;
-    /* font-family: Verdana, Geneva, Tahoma, sans-serif;*/ 
+.wins {
+    font-size: 32px;
+    margin-left: 10px;
+    text-shadow: 5px -5px 5px #032D44;
+    margin-top: 10px;
+}
 
-    /*margin-bottom: 30px;
-    padding-bottom: 20px;*/
+.raiting{
+    font-size: 32px;
+    margin-left: 10px;
+    text-shadow: 5px -5px 5px #032D44;
+}
+
+.wins-num{
+    font-size: 32px;
+    margin-left: 20px;
+    text-shadow: 5px -5px 5px #032D44;
+    margin-top: 7px;
+    text-align: center;
+} 
+
+.raiting-num{
+    font-size: 32px;
+    margin-left: 20px;
+    text-shadow: 5px -5px 5px #032D44;
+}
+
+.wins-cont{
+    margin: 0px;
 }
 
 

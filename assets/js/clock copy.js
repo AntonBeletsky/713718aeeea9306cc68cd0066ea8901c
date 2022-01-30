@@ -3,13 +3,12 @@ function clock() {// We create a new Date object and assign it to a variable cal
 
         // Access the "getHours" method on the Date object with the dot accessor.
         hours = time.getHours(),
+
         // Access the "getMinutes" method with the dot accessor.
         minutes = time.getMinutes(),
-        seconds = time.getSeconds();
 
-        hours = 2;
-        minutes = 60 - minutes;
-        seconds = 60 - seconds;
+
+        seconds = time.getSeconds();
 
     document.querySelectorAll('.clock')[0].innerHTML = harold(hours) + ":" + harold(minutes) + ":" + harold(seconds);
 
