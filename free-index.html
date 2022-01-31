@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <meta name="Author" content="Anton Beletsky">
+  <title>Chess - Матричный процессор</title>
+  <!-- CSS-->
+  <link rel="stylesheet" href="./assets/css/color_theme.css">
+  <link rel="stylesheet" href="./assets/css/main.css">
+  <link rel="stylesheet" href="./assets/css/chessboard.css">
+  <link rel="stylesheet" href="./assets/css/navbar.css">
+  <link rel="stylesheet" href="./assets/css/playercard.css">
+  <link rel="stylesheet" href="./assets/css/auth.css">
+  <link rel="stylesheet" href="./assets/css/dragDemo.css">
+  
+
+  <link rel="stylesheet" href="./assets/css/ui_elements/black_box.css">
+  <link rel="stylesheet" href="./assets/css/ui_elements/buttons.css">
+  <link rel="stylesheet" href="./assets/css/ui_elements/chexbox.css">
+  <link rel="stylesheet" href="./assets/css/ui_elements/containers.css">
+  <link rel="stylesheet" href="./assets/css/ui_elements/modal.css">
+
+  <link rel="stylesheet" href="./assets/css/ui_elements/radio.css">
+  <link rel="stylesheet" href="./assets/css/ui_elements/range.css">
+  <link rel="stylesheet" href="./assets/css/ui_elements/selectbox.css">
+
+  <link rel="stylesheet" href="./assets/css/ui_elements/movesbox.css">
+
+  <link rel="stylesheet" href="./assets/css/ui_elements/clock.css">
+  
+</head>
+<body>
+<!--
+  examples
+https://stackoverflow.com/questions/9087332/making-a-wrapper-in-html5-css3
+https://css-tricks.com/snippets/html/html5-page-structure/
+https://www.w3docs.com/snippets/html/html5-page-structure.html
+https://developer.mozilla.org/ru/docs/Web/CSS/CSS_Flexible_piece_Layout/Aligning_Items_in_a_Flex_Container
+
+https://developer.mozilla.org/ru/docs/Learn/CSS/CSS_layout/Flexbox
+
+https://getbootstrap.com/docs/4.3/examples/album/
+
+https://developer.mozilla.org/ru/docs/Web/CSS/flex
+
+Если свойство float справляется со своей задачей, то и используйте его.
+Морально устарела несемантичная вёрстка (теги div везде, вместо более семантичных header, navigation, section, article и т.д.), но сам флоат вполне хорош.
+Флекс отчасти более удобен, но работает совсем по другому. Так что не стоит считать его полной заменой флоатам.
+Кстати, ещё можно использовать inline-block. Хотя и у него свои задачи.
+
+-->
+<header>
+
+<!-- nav  -->
+<div class="navbar">
+  <a href="#home" class="active">Home</a>
+  <a href="#openModal">Открыть модальное окно</a>
+  <div class="dropdown">
+    <button class="dropbtn">Меню выподающее</button>
+    <div class="dropdown-content">
+      <a href="#">Link 1</a>
+      <a href="#">Link 2</a>
+      <a href="#openModal">Открыть модальное окно</a>
+    </div>
+  </div>
+</div>
+
+
+<nav class="navbar">
+  <ul>
+    <li>
+      <div class="auth-block">
+      <img src="./assets/img/img_avatar2.png" class="profile">
+      <span>Joan</span>
+      </div>
+    </li>
+    <li><a href="#news">Sign UP</a></li>
+    <li><a href="#contact">Log In</a></li>
+    <li><a href="#about">Log Out</a></li>
+  </ul>
+</nav>
+
+
+</header>
+
+<!-- центр блок-->
+<div class="wrapper">
+  
+  <div style="
+  width: 1300px; 
+  height: 200px; 
+  border: #b5915f outset 3px;
+  background-color: #441a03;
+  margin-bottom: 200px;
+  margin-top: 50px;
+  margin-left: 50px;
+  color: white;
+  font-size: 150px;
+  padding: 150px 150px 150px 150px;
+  ">
+    YOU CONTENT
+  </div>
+
+  <br>
+
+</div>
+
+<footer>
+  <div>
+    Develop by Asguard01
+  </div>
+</footer>
+
+
+
+<!-- js -->
+<script src="./assets/js/drag_drop_manager.js"></script>
+<script src="./assets/js/drag_drop_use.js"></script>
+<script src="./assets/js/modal.js"></script>
+<script src="./assets/js/select_box.js"></script>
+<script src="./assets/js/clock.js"></script>
+
+</body>
+</html>
