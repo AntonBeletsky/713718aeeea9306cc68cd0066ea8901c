@@ -11,7 +11,9 @@ ul li {
     overflow: hidden;
     align-items: flex-start;
     justify-content: flex-start;
+    display: flex; /* or inline-flex */
     text-shadow: 5px -5px 2px #032D44;
+    font-size: 20px;
 }
 
 /* Links inside the navbar */
@@ -21,7 +23,7 @@ ul li {
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
-    font-size: 18px;
+    /*font-size: 20px;*/
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bolder;
     transition: .2s linear;
@@ -33,6 +35,10 @@ ul li {
     text-shadow: 5px -5px 30px #04AA6D;
 }
 
+.navbar>div, .navbar>a{
+    align-self: center; /* center */
+}
+
 /* The dropdown container */
 .dropdown {
     float: left;
@@ -41,7 +47,7 @@ ul li {
 
 /* Dropdown button */
 .dropdown .dropbtn {
-    font-size: 18px;
+    font-size: 20px;
     border: none;
     outline: none;
     color: #b5915f;
@@ -80,7 +86,7 @@ ul li {
     background-color: #333;
     padding: 12px 16px;
     text-decoration: none;
-    display: block; /* /* TODO: see it  */ */
+    display: block; /* /* TODO: see it  */ 
     text-align: left;
 }
 
@@ -94,6 +100,14 @@ ul li {
     display: block; /* TODO: see it  */
 }
 
+img.nav-profile{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;    
+    padding-top: 10px;
+}
+
+/*
 .nav-input input {
     height: 30px;
     width: 300px;
@@ -106,4 +120,5 @@ ul li {
     color: #a5b3a5;
     padding-bottom: 15px;
 }
+*/
 

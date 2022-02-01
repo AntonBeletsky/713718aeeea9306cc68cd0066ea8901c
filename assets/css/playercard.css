@@ -23,8 +23,8 @@ img.profile {
     cursor: default;
 }
 
-.player-card { /* .player-card div{ */
-    /*text-shadow: 5px -5px 5px #032D44;*/
+.player-card h2.active-player { 
+    color: #f1ebe6 !important;
 }
 
 div>.profile {
@@ -41,6 +41,7 @@ div.profile {
     width: 60px;
     height: 60px;
     border-radius: 50%;
+    /* padding-top: 10px; */
     /*margin: 20px;*/
 }
 

@@ -52,19 +52,17 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
 <header>
 
 <!-- nav  -->
-<div class="navbar">
+<nav class="navbar">
   <a href="#home" class="active">Home</a>
   <a href="#openModal">Открыть модальное окно</a>
   <div class="dropdown">
     <button class="dropbtn">Меню выподающее</button>
-	
     <div class="dropdown-content">
-      <a href="#">Link 1</a>
-      <a href="#">Link 2</a>
-      <a href="#openModal">Открыть модальное окно</a>
+      <div><a href="#">Link 1</a></div>
+      <div><a href="#">Link 2</a></div>
+      <div><a href="#openModal">Открыть модальное окно</a></div>
     </div>
-	
-</div>
+  </div>
 	
 	<div class="dropdown">
     <button class="dropbtn">Pages</button>
@@ -84,21 +82,29 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
     </div>
   </div>
   
-</div>
+</nav>
 
 
 <nav class="navbar">
-  <ul>
-    <li>
-      <div class="auth-block">
-      <img src="./assets/img/img_avatar2.png" class="profile">
+
+    <div class="auth-block">
+      <div><img src="./assets/img/img_avatar2.png" class="nav-profile"></div>
       <span>Joan</span>
+    </div>
+
+    <div class="dropdown">
+      <button class="dropbtn">
+        <i>▼</i>
+      </button>
+      <div class="dropdown-content">
+        <div><a href="#">Link 1</a></div>
+        <div><a href="#">Link 2</a></div>
       </div>
-    </li>
-    <li><a href="#news">Sign UP</a></li>
-    <li><a href="#contact">Log In</a></li>
-    <li><a href="#about">Log Out</a></li>
-  </ul>
+    </div>
+
+    <div><a href="#news">Sign UP</a></div>
+    <div><a href="#contact">Log In</a></div>
+    <div><a href="#about">Log Out</a></div>
 </nav>
 
 
@@ -117,7 +123,7 @@ https://developer.mozilla.org/ru/docs/Web/CSS/flex
             <div>
             <img src="./assets/img/img_avatar2.png" alt="Avatar woman" class="profile">
             <span>
-              <h2>Jane Flex</h2>
+              <h2 class="active-player">Jane Flex</h2>
             </span>
             </div>
 

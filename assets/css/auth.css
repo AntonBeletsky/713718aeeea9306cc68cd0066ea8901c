@@ -5,6 +5,7 @@
     background: #333;
     margin-right: 10px;
     cursor: default;
+    display: flex;
 }
 
 .auth-block span {
@@ -12,11 +13,17 @@
     color: #b5915f;
     display: inline;
     text-shadow: 2px -2px 16px #032D44;
+    align-self: center; /* TODO: center */
+    margin: 0 auto;
+    padding-left: 10px;
+
 }
 
 .auth-block span:hover {
     color: #f2f2f2;
     cursor: pointer;
+    text-shadow: 5px -5px 30px #04AA6D;
 }
+
 
 /* auth end*/
