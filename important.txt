@@ -1,0 +1,5 @@
+https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-y
+
+/* overflow-y: auto; */ /* overflow-x: hidden;
+
+крутилка внутри дива 
