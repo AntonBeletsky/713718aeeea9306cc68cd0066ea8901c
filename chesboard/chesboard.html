@@ -1,0 +1,2408 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <meta name="Author" content="Anton Beletsky">
+  <title>Chess - Матричный процессор</title>
+  <!-- CSS: содержимое подключенных файлов собрано внутрь песочницы -->
+  <style>
+/* Это было из файла: assets/css/color_theme.css */
+/* 
+https://habr.com/ru/company/ruvds/blog/523370/
+https://habr.com/ru/company/skillfactory/blog/523130/
+
+:root {
+  --primary-color: #222;
+  --_primary-color: #222;
+  --12-primary-color: #222;
+  --primay-color-12: #222;
+}
+
+.section-title {
+  color: var(--primary-color, #222);
+}
+
+*/
+
+/* theme one */
+/* rules */
+@font-face {
+  font-family: font_rule1;
+  src: url("PlayfairDisplay-Bold.ttf");
+}
+
+@font-face {
+  font-family: digital_numbers;
+  src: url("digital-7.ttf");
+}
+
+:root {
+  /* container */
+
+  /* windows */
+  --window-back-color: #441a03;
+  --window-content-color: #b5915f;
+  --window-border-color1: #b5915f;
+  --window-border-color2: #441a03;
+
+  /* buttons-container* */
+  --button-back-color: #b5915f;
+  --button-back-color2: #a78556;
+  /* hover */
+  --button-border-color: #441a03;
+
+  /* buttons content */
+  --button-content-color: #441a03;
+  --button-content2-color: #833a18;
+  --button-disabled-color: #bda584;
+
+  /* table */
+
+  /* wrapper */
+
+  /* body */
+
+  /* chessboard */
+
+  /* navbar */
+
+}
+
+/* Это было из файла: assets/css/main.css */
+/* https://www.w3docs.com/snippets/html/html5-page-structure.html */
+/* https://developer.mozilla.org/ru/docs/Web/CSS/CSS_Flexible_Box_Layout/Aligning_Items_in_a_Flex_Container */
+/* https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity*/
+
+/* http://htmlbook.ru/css/font-face */
+
+
+html, body {
+  /*display: flex;*/
+  /*flex-wrap: wrap;*/
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  background-color: #032D44;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.wrapper {
+  padding-top: 18px;
+  background-color: #809159;
+  /*background-color: #00ABA4;*/
+  margin-top: 0px;
+  margin: 0px;
+}
+
+header {
+  /*padding: 0 10px;*/
+  background: #333;
+  display: flex;
+  justify-content: space-around;
+}
+
+footer {
+  /* display: inline-block; */
+  display: grid;
+  background-color: #333;
+  color: #ffffff;
+  font-weight: normal;
+}
+
+footer div {
+  text-align: center;
+}
+
+/* 2th wrapper :) */
+.container-center {
+  display: flex;
+  grid-auto-flow: row;
+
+  /* Сверху | Справа | Снизу | Слева */
+  padding: 20px 10px 10px 20px;
+  /* dev mode
+  color: rgb(88, 168, 85);
+  background-color: aqua;*/
+}
+
+/* Это было из файла: assets/css/chessboard.css */
+.container-chessboard {
+  display: grid;
+  background-color: #00000000;
+  /* debug не видно*/
+  grid-template-areas: "a b c";
+  /* box-shadow: 5px -5px 10px 5px #032D44; */
+  margin: 0px 0px 0px 0px;
+  border: 10px ridge #462921;
+}
+
+.container-chessboard-up2-border {
+  border: 10px outset #462921;
+  padding: 2px;
+  background-color: #b5915f;
+  box-shadow: 5px -5px 10px 5px #032D44;
+  margin-left: 50px;
+}
+
+.left-box-chessboard {
+  background-color: #7d694c;
+  grid-area: a;
+}
+
+.right-box-chessboard {
+  background-color: #7d694c;
+  grid-area: c;
+}
+
+.chessboard-number {
+  width: 40px;
+  height: 70px;
+  background-color: #7d694c;
+  text-align: center;
+  align-self: center;
+  font-weight: bolder;
+  font-size: 18px;
+}
+
+.chessboard-number>div {
+  padding-top: 20px;
+  text-shadow: 3px -3px 18px #bdb145;
+}
+
+.chessboard-spacer {
+  height: 40px;
+  background-color: #7d694c;
+}
+
+
+.chessboard {
+  grid-area: b;
+  /*border: 50px solid #462921;*/
+  width: 560px;
+  margin: 0 auto;
+  margin-left: 0px;
+  /* 50 */
+  display: grid;
+  grid-gap: 0;
+  grid-template-columns: repeat(8, 70px);
+  grid-template-rows: 40px repeat(8, 70px) 40px;
+  grid-auto-flow: row;
+  /*box-shadow: 5px -5px 10px 5px #032D44;*/
+}
+
+.chessboard-inner {
+  display: grid;
+  grid-gap: 0;
+  grid-template-columns: repeat(8, auto);
+  grid-template-rows: auto;
+  grid-auto-flow: row;
+  align-items: strech;
+}
+
+.piece-inner {
+  text-align: center;
+  align-self: center;
+  font-weight: bolder;
+  font-size: 18px;
+
+}
+
+.piece-inner>span {
+  text-shadow: 3px -3px 18px #bdb145;
+}
+
+.piece {
+  background-color: #b5915f;
+  color: #000;
+  text-align: center;
+  /*background: linear-gradient(to bottom right, #b5915f, #8a6f47);*/
+}
+
+.piece:hover {
+  border: white solid 2px !important;
+  /*border: #978e8d solid 1px;*/
+  border-radius: 2px;
+}
+
+.piece-green {
+  border: #13c91c solid 5px !important;
+  border-radius: 2px;
+}
+
+.piece-red {
+  border: #ec2112 solid 5px !important;
+  border-radius: 2px;
+}
+
+.chessboard>.top>.chessboard-inner>.piece-inner {
+  transform: rotate(180deg);
+}
+
+.right-box-chessboard>.chessboard-number {
+  transform: rotate(180deg);
+}
+
+/* https://developer.mozilla.org/ru/docs/Web/CSS/CSS_Selectors */
+.piece:nth-child(2)~div:nth-child(-2n+9),
+/* выбрать 9 клетку, выбирать каждую вторую до 16 */
+.piece:nth-child(9)~div:nth-child(-2n+16),
+.piece:nth-child(17)~div:nth-child(-2n+25),
+.piece:nth-child(25)~div:nth-child(-2n+32),
+.piece:nth-child(33)~div:nth-child(-2n+41),
+.piece:nth-child(41)~div:nth-child(-2n+48),
+.piece:nth-child(49)~div:nth-child(-2n+57),
+.piece:nth-child(57)~div:nth-child(-2n+64) {
+  background-color: #441a03;
+  /*background: linear-gradient(to bottom right, #441a03, #301508);*/
+  color: #fff;
+  text-align: center;
+}
+
+.piece:nth-child(25)~div:nth-child(-1n+33) {
+  border-bottom: 1px solid gray;
+}
+
+.piece:nth-child(33)~div:nth-child(-1n+41) {
+  border-top: 1px solid gray;
+}
+
+.top,
+.bottom {
+  display: grid;
+  align-items: stretch;
+  background-color: #7d694c;
+}
+
+.top {
+  grid-column-start: 1;
+  grid-column-end: 9;
+  grid-row-start: 1;
+  grid-row-end: 1;
+}
+
+.bottom {
+  grid-column-start: 1;
+  grid-column-end: 9;
+  grid-row-start: 10;
+  grid-row-end: 10;
+}
+
+img.figure {
+  width: 70px;
+  height: 70px;
+}
+
+img.figure:hover {
+  width: 70px;
+  height: 70px;
+  transform: scale(1.1);
+}
+
+
+.draggable {
+  cursor: pointer;
+}
+
+/* https://css-tricks.com/snippets/css/a-guide-to-flexbox/ */
+
+.chessboard-footer-container {
+  display: flex;
+  margin-top: 12px;
+  justify-content: center;
+}
+
+.chessboard-input {
+  order: 1;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.chessboard-button-container {
+  order: 2;
+}
+
+.chessboard-input>input {
+  height: 30px;
+  width: 300px;
+  background-color: hsla(120, 93%, 79%, 0);
+  border: #000000;
+  border-bottom: solid;
+  outline: none;
+  font-size: 28px;
+  font-weight: bold;
+  color: #032D44;
+  padding-bottom: 15px;
+}
+
+.btm-chessboard {
+  /*box-shadow: 3px 3px 0 #032D44 inset, -3px -3px 0 #032D44 inset;*/
+
+  border: 3px #032D44 solid;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: bolder;
+  margin: 2px 2px;
+  cursor: pointer;
+  transition: .3s linear;
+
+  background-color: hsla(120, 93%, 79%, 0);
+  color: #032D44;
+
+}
+
+.btm-chessboard:hover {
+  text-shadow: 5px -5px 25px #032D44;
+  background-color: #032D4410;
+  /*box-shadow: 1px -1px 2px 1px #032D44;*/
+}
+
+/* Это было из файла: assets/css/navbar.css */
+/* for dropdown */
+
+ul li {
+    display: inline-block;
+    /*padding: 0 0px;*/
+    list-style: none;
+}
+
+.navbar {
+    background-color: #333;
+    overflow: hidden;
+    align-items: flex-start;
+    justify-content: flex-start;
+    display: flex; /* or inline-flex */
+    text-shadow: 5px -5px 2px #032D44;
+    font-size: 20px;
+}
+
+/* Links inside the navbar */
+.navbar a { 
+    float: left;
+    color: #b5915f;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    /*font-size: 20px;*/
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bolder;
+    transition: .2s linear;
+}
+
+/* Add a color to the active/current link */
+.navbar a.active {
+    color: white;
+    text-shadow: 5px -5px 30px #04AA6D;
+}
+
+.navbar>div, .navbar>a{
+    align-self: center; /* center */
+}
+
+/* The dropdown container */
+.dropdown {
+    float: left;
+    overflow: hidden;
+}
+
+/* Dropdown button */
+.dropdown .dropbtn {
+    font-size: 20px;
+    border: none;
+    outline: none;
+    color: #b5915f;
+    padding: 14px 16px;
+    background-color: inherit;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bolder;
+    transition: .2s linear;
+    text-shadow: 5px -5px 2px #032D44;
+    /* Important for vertical align on mobile phones */
+    margin: 0;
+    /* Important for vertical align on mobile phones */
+}
+
+/* Add a red background color to navbar links on hover */
+.navbar a:hover, .dropdown:hover .dropbtn {
+    color: #f2f2f2;
+    text-shadow: 5px -5px 30px #04AA6D;
+}
+
+/* Dropdown content (hidden by default) */
+
+.dropdown-content {
+    display: none; /* TODO: see it  */
+    position: absolute;
+    background-color: #f9f9f900;
+    min-width: 160px;
+    /*box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.0);*/
+    z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    float: none;
+    color: #b5915f;
+    background-color: #333;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block; /* /* TODO: see it  */ 
+    text-align: left;
+}
+
+/* Add a grey background color to dropdown links on hover */
+.dropdown-content a:hover {
+    background-color: #333;
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: block; /* TODO: see it  */
+}
+
+img.nav-profile{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;    
+    padding-top: 10px;
+}
+
+/*
+.nav-input input {
+    height: 30px;
+    width: 300px;
+    background-color: hsla(120, 93%, 79%, 0);
+    border: #000000;
+    border-bottom: solid;
+    outline: none;
+    font-size: 28px;
+    font-weight: bold;
+    color: #a5b3a5;
+    padding-bottom: 15px;
+}
+*/
+
+/* Это было из файла: assets/css/playercard.css */
+/* player cards  */
+
+img.profile {
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    
+}
+
+.player-card {
+    height: 300px;
+    width: 300px;
+    border: thick double #b5915f;
+    /*margin: 20px;*/
+    background-color: #441a03;
+    box-shadow: 5px -5px 10px 5px #032D44;
+    color: #b5915f;
+    font-size: 22px;
+    display: inline-block;
+}
+
+.player-card:hover {
+    cursor: default;
+}
+
+.player-card h2.active-player { 
+    color: #f1ebe6 !important;
+}
+
+div>.profile {
+    margin-left: 20px;
+}
+
+div.profile {
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+
+.player-card img.profile {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    /* padding-top: 10px; */
+    /*margin: 20px;*/
+}
+
+.player-card>span {
+    font-size: 28px;
+    margin-left: 10px;
+    /* бомба текст*/
+    text-shadow: 5px -5px 5px #032D44;
+}
+
+.player-card span h2 {
+    /* имя справо за картинкой*/
+    display: inline;
+    text-shadow: 5px -5px 5px #032D44;
+    /*margin: 20px;*/
+}
+
+img.flag {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    margin-left: 10px;
+    width: 100px;
+    height: 75px;
+    border: #b5915f outset 3px;
+}
+
+.wins {
+    font-size: 32px;
+    margin-left: 10px;
+    text-shadow: 5px -5px 5px #032D44;
+    margin-top: 10px;
+}
+
+.raiting{
+    font-size: 32px;
+    margin-left: 10px;
+    text-shadow: 5px -5px 5px #032D44;
+}
+
+.wins-num{
+    font-size: 32px;
+    margin-left: 20px;
+    text-shadow: 5px -5px 5px #032D44;
+    margin-top: 7px;
+    text-align: center;
+} 
+
+.raiting-num{
+    font-size: 32px;
+    margin-left: 20px;
+    text-shadow: 5px -5px 5px #032D44;
+}
+
+.wins-cont{
+    margin: 0px;
+}
+
+
+/* player cards  end*/
+
+/* Это было из файла: assets/css/auth.css */
+/* auth */
+.auth-block {
+    font-size: 28px;
+    color: #f2f2f2;
+    background: #333;
+    margin-right: 10px;
+    cursor: default;
+    display: flex;
+}
+
+.auth-block span {
+    /* имя справо за картинкой*/
+    color: #b5915f;
+    display: inline;
+    text-shadow: 2px -2px 16px #032D44;
+    align-self: center; /* TODO: center */
+    margin: 0 auto;
+    padding-left: 10px;
+
+}
+
+.auth-block span:hover {
+    color: #f2f2f2;
+    cursor: pointer;
+    text-shadow: 5px -5px 30px #04AA6D;
+}
+
+
+/* auth end*/
+
+/* Это было из файла: assets/css/dragDemo.css */
+.draggable {
+  cursor: pointer;
+}
+
+.post-drop {
+  /*background-color: chartreuse !important;*/
+  /*background: linear-gradient(to bottom right, #518547, #5eb465) !important;*/
+
+  /*background-color: #3ffd2d !important;
+  opacity: 0.4 !important;*/
+
+  background-color: #3efd2d56 !important;
+}
+
+.post-drop-true {
+  background-color: #3efd2d56 !important;
+  /*background-color: chartreuse !important;*/
+  /*opacity: 0.4 !important;*/
+  /*background: linear-gradient(to bottom right, #518547, #5eb465);*/
+}
+
+.post-drop-false {
+  background-color: #f5101096 !important;
+
+  /*opacity: 0.4 !important;*/
+  /*background: linear-gradient(to bottom right, #fc0808, #e43636);*/
+}
+
+/* Это было из файла: assets/css/ui_elements/black_box.css */
+.black-box {
+    background-color: #441a03;
+    border: thick double #b5915f;
+    box-shadow: 5px -5px 10px 5px #032D44;
+    color: #b5915f;
+
+    /*
+    height: 300px;
+    width: 300px;
+    font-size: 22px;
+    display: inline-block;
+    padding-top: 15px;
+    padding-left: 20px;
+    padding-bottom: 20px;
+    padding-right: 10px;
+    margin-bottom: 30px;
+    */
+
+    transition: .3s linear;
+}
+
+.black-box:hover {
+    box-shadow: 8px -5px 15px 9px #032D44;
+    transform: scale(1.01);
+    transition: .3s linear;
+}
+
+/* Это было из файла: assets/css/ui_elements/buttons.css */
+/* BUTTONS */
+.btn-green, .btn-blue, .btn-red, .btn-black, .btn-white {
+    border: none;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: bolder;
+    margin: 2px 2px;
+    cursor: pointer;
+    transition: .3s linear;
+}
+
+.btn-green {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-green:hover {
+    color: #000000;
+}
+
+.btn-blue {
+    background-color: #008CBA;
+    color: white;
+}
+
+.btn-blue:hover {
+    color: #000000;
+}
+
+.btn-red {
+    background-color: #f44336;
+    color: white;
+}
+
+.btn-red:hover {
+    color: #000000;
+}
+
+.btn-black {
+    background-color: #441a03;
+    color: #b5915f;
+}
+
+.btn-black:hover {
+    color: white;
+}
+
+.btn-white {
+    background-color: #b5915f;
+    color: #441a03;
+}
+
+.btn-white:hover {
+    /*background-color: #a78556;*/
+    color: #dbb052;
+    background-color: #967850;
+    /*background-color: #966b54;*/
+}
+
+/* BUTTONS END */
+
+/* Это было из файла: assets/css/ui_elements/chexbox.css */
+/* CHECKBOX ////////////////////////////////////////////////////*/
+
+/* https://itchief.ru/html-and-css/styling-checkbox-and-radio */
+
+.checkbox-container {
+    /*background-color: #b5915f;*/
+    background-color: var(--button-back-color);
+    color: var(--button-content-color);
+    border: var(--button-border-color);
+    /* Сверху | Справа | Снизу | Слева */
+    padding: 5px 0px 2px 8px;
+    margin: 2px 2px 2px 2px;
+    font-weight: bolder;
+    width: 200px;
+    /*height: 35px;*/
+}
+
+.checkbox-container:hover {
+    background-color: #a78556;
+}
+
+.custom-checkbox {
+    /*background-color: #b5915f;
+    color: #441a03;*/
+}
+
+/* для элемента input c type="checkbox" */
+.custom-checkbox>input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+
+/* для элемента label, связанного с .custom-checkbox */
+.custom-checkbox>span {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+}
+
+/* создание в label псевдоэлемента before со следующими стилями */
+.custom-checkbox>span::before {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+    flex-grow: 0;
+    /*border: 1px solid #adb5bd;*/
+    border: 1px solid #441a03;
+    border-radius: 0.25em;
+    margin-right: 0.5em;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50% 50%;
+}
+
+/* стили при наведении курсора на checkbox */
+.custom-checkbox>input:not(:disabled):not(:checked)+span:hover::before {
+    border-color: #441a03;
+    box-shadow: inset 0 0 5px #441a03;
+}
+
+/* стили для активного чекбокса (при нажатии на него) */
+.custom-checkbox>input:not(:disabled):active+span::before {
+    background-color: #b5915f;
+    border-color: #441a03;
+}
+
+/* стили для чекбокса, находящегося в фокусе */
+.custom-checkbox>input:focus+span::before {
+    /*box-shadow: 0 0 0 0.1rem #966b54;*/
+}
+
+/* стили для чекбокса, находящегося в фокусе и не находящегося в состоянии checked */
+.custom-checkbox>input:focus:not(:checked)+span::before {
+    border-color: #441a03;
+}
+
+/* стили для чекбокса, находящегося в состоянии checked */
+.custom-checkbox>input:checked+span::before {
+    border-color: #441a03;
+    background-color: #441a03;
+    /* галочка*/
+    background-image: url("White_Queen.svg");
+    background-size: 0.5cm;
+}
+
+/* стили для чекбокса, находящегося в состоянии disabled */
+.custom-checkbox>input:disabled+span::before {
+    background-color: #bda584;
+}
+
+/* CHECKBOX-END*/
+
+/* Это было из файла: assets/css/ui_elements/containers.css */
+/* container */
+
+.container-blocks {
+    height: 700px;
+    width: 350px;
+    padding-left: 30px;
+}
+
+.container-box {
+    /*height: 300px;*/
+    width: 300px;
+    /*
+    background-color: #441a03;
+    border: thick double #b5915f;
+    box-shadow: 5px -5px 10px 5px #032D44;
+    color: #b5915f;
+    */
+
+    font-size: 22px;
+    display: inline-block;
+    padding-top: 15px;
+    padding-left: 20px;
+    padding-bottom: 20px;
+    padding-right: 10px;
+    margin-bottom: 30px;
+}
+
+/* https://developer.mozilla.org/ru/docs/Web/CSS/display */
+
+
+.container-mini{
+    display: flex;
+
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+.container-mini>div {
+    margin: unset;
+    padding: unset;
+    width: unset;
+    height: unset;
+    
+}
+
+.scroll{
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Это было из файла: assets/css/ui_elements/modal.css */
+/* свойства модального окна по умолчанию */
+.modal {
+    position: fixed;
+    /* фиксированное положение */
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.5);
+    /* цвет фона */
+    z-index: 20;
+    opacity: 0;
+    /* по умолчанию модальное окно прозрачно */
+    -webkit-transition: opacity 200ms ease-in;
+    -moz-transition: opacity 200ms ease-in;
+    transition: opacity 200ms ease-in;
+    /* анимация перехода */
+    pointer-events: none;
+    /* элемент невидим для событий мыши */
+    margin: 0;
+    padding: 0;
+}
+
+/* при отображении модального окно */
+.modal:target {
+    opacity: 1;
+    /* делаем окно видимым */
+    pointer-events: auto;
+    /* элемент видим для событий мыши */
+    overflow-y: auto;
+    /* добавляем прокрутку по y, когда элемент не помещается на страницу */
+}
+
+/* ширина модального окна и его отступы от экрана */
+.modal-dialog {
+    position: relative;
+    width: auto;
+    margin: 10px;
+}
+
+@media (min-width: 276px) {
+    .modal-dialog {
+        max-width: 800px;
+        margin: 30px auto;
+        /* для отображения модального окна по центру */
+    }
+}
+
+/* свойства для блока, содержащего контент модального окна */
+.modal-content {
+    height: 600px;
+    width: 800px;
+    background-color: #441a03;
+    margin: 20px;
+    border: thick double #b5915f;
+    box-shadow: 5px -5px 10px 5px #917464;
+    color: #b5915f;
+    font-size: 22px;
+    display: inline-block;
+
+    position: relative;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    outline: 0;
+}
+
+@media (min-width: 768px) {
+    .modal-content {
+        -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
+    }
+}
+
+/* свойства для заголовка модального окна */
+.modal-header {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    padding: 15px;
+    border-bottom: thick double #b5915f;
+}
+
+.modal-title {
+    margin-top: 0;
+    margin-bottom: 0;
+    line-height: 1.5;
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+/* свойства для кнопки "Закрыть" */
+.close {
+    float: right;
+    font-family: sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1;
+    color: #917464;
+    text-shadow: 0 1px 0 #fff;
+    opacity: .5;
+    text-decoration: none;
+}
+
+/* свойства для кнопки "Закрыть" при нахождении её в фокусе или наведении */
+.close:focus, .close:hover {
+    color: #dbb052;
+    text-decoration: none;
+    cursor: pointer;
+    opacity: .75;
+}
+
+/* свойства для блока, содержащего основное содержимое окна */
+.modal-body {
+    position: relative;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 auto;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    padding: 15px;
+    overflow: auto;
+}
+
+.modal-input input {
+    height: 30px;
+    width: 500px;
+    background-color: hsla(0, 0%, 0%, 0);
+    border: #000000;
+    border-bottom: solid;
+    outline: none;
+    font-size: 28px;
+    font-weight: bold;
+    color: #ccbaa8;
+    padding-bottom: 15px;
+}
+
+
+/* SCROLBAR */
+
+/* width */
+::-webkit-scrollbar {
+    width: 20px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    box-shadow: inset 0 0 5px grey;
+    background: #441a03;
+    border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    box-shadow: inset 0 0 5px grey;
+    background: #b5915f;
+}
+
+/* Это было из файла: assets/css/ui_elements/radio.css */
+/* RADIO BOX ////////////////////////////////////////////////////*/
+
+.radio-container {
+    /*margin-bottom: 0.2em;*/
+    background-color: #b5915f;
+    color: #441a03;
+    border: #441a03;
+    /* Сверху | Справа | Снизу | Слева */
+    padding: 5px 0px 2px 8px;
+    margin: 2px 2px 2px 2px;
+    font-weight: bolder;
+    width: 200px;
+    /*height: 35px;*/
+}
+
+.radio-container:hover {
+    background-color: #a78556;
+}
+
+/* для элемента input c type="radio" */
+.custom-radio>input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+
+/* для элемента label связанного с .custom-radio */
+.custom-radio>span {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+}
+
+/* создание в label псевдоэлемента  before со следующими стилями */
+.custom-radio>span::before {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+    flex-grow: 0;
+    border: 1px solid #441a03;
+    border-radius: 50%;
+    margin-right: 0.5em;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50% 50%;
+}
+
+/* стили при наведении курсора на радио */
+.custom-radio>input:not(:disabled):not(:checked)+span:hover::before {
+    border-color: #441a03;
+    box-shadow: inset 0 0 5px #441a03;
+}
+
+/* стили для активной радиокнопки (при нажатии на неё) */
+.custom-radio>input:not(:disabled):active+span::before {
+    background-color: #b5915f;
+    border-color: #441a03;
+}
+
+/* стили для радиокнопки, находящейся в фокусе */
+.custom-radio>input:focus+span::before {
+    /*box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);*/
+}
+
+/* стили для радиокнопки, находящейся в фокусе и не находящейся в состоянии checked */
+.custom-radio>input:focus:not(:checked)+span::before {
+    border-color: #441a03;
+}
+
+/* стили для радиокнопки, находящейся в состоянии checked */
+.custom-radio>input:checked+span::before {
+    border-color: #441a03;
+    background-color: #441a03;
+    /* галочка*/
+    background-image: url("White_Queen.svg");
+    background-size: 0.5cm;
+}
+
+/* стили для радиокнопки, находящейся в состоянии disabled */
+.custom-radio>input:disabled+span::before {
+    background-color: #bda584;
+}
+
+
+/* RADIO BOX END */
+
+/* Это было из файла: assets/css/ui_elements/range.css */
+/* https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_rangeslider */
+/* RANGE ===================================================================== */
+.range_container {
+    width: 100%;
+}
+
+.range_container>input {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 25px;
+    background: var(--button-back-color);
+    outline: none;
+    opacity: 1;
+    /* не прозрачнолсть 0,7 */
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+
+.range_container>input:hover {
+    opacity: 1;
+    background-color: #a78556;
+    /* не прозрачное совсем*/
+}
+
+.range_container>input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 35px;
+    height: 35px;
+    /*background: var(--button-content2-color);*/
+    background: url("White_Queen.svg");
+    background-color: #441a03;
+    background-size: 0.8cm;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    border: 2px solid #b5915f;
+}
+
+
+/*
+.range_container>input::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    background: #040faa;
+    cursor: pointer;
+}
+*/
+
+/* RANGE END */
+
+/* Это было из файла: assets/css/ui_elements/selectbox.css */
+/* CUSTUM SELECT */
+/* https: //www.w3schools.com/howto/howto_custom_select.asp*/
+
+/* The container must be positioned relative: */
+.custom-select {
+    position: relative;
+    font-family: Arial;
+}
+
+.custom-select select {
+    display: none;
+    /*hide original SELECT element: */
+}
+
+.select-selected {
+    background-color: #b5915f;
+    color: #441a03;
+}
+
+/* Style the arrow inside the select element: */
+.select-selected:after {
+    position: absolute;
+    content: "";
+    top: 14px;
+    right: 10px;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    border-color: #441a03 transparent transparent transparent;
+}
+
+/* Point the arrow upwards when the select box is open (active): */
+.select-selected.select-arrow-active:after {
+    border-color: transparent transparent #441a03 transparent;
+    top: 7px;
+}
+
+/* style the items (options), including the selected item: */
+.select-items div, .select-selected {
+    color: #441a03;
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+    cursor: pointer;
+}
+
+/* Style items (options): */
+.select-items {
+    position: absolute;
+    /*background-color: #441a03;*/
+    background-color: #b5915f;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 99;
+}
+
+/* Hide the items when the select box is closed: */
+.select-hide {
+    display: none;
+}
+
+.select-items div:hover, .same-as-selected {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* CUSTUM SELECT END*/
+
+/* Это было из файла: assets/css/ui_elements/movesbox.css */
+/* notes moves*/
+/* to .container-moves {*/
+.moves-container {
+    height: 700px;
+    width: 350px;
+    font-size: 22px;
+    display: inline-block;
+    padding-top: 15px;
+    padding-left: 20px;
+    padding-bottom: 20px;
+    padding-right: 10px;
+    margin-bottom: 30px;
+}
+
+.moves-box {
+    margin: 0 auto;
+    margin-left: 15px;
+    padding-left: 10px;
+    padding-top: 7px;
+    display: grid;
+    grid-gap: 0;
+    grid-template-columns: repeat(1, 300px);
+    grid-auto-flow: row;
+    background-color: #7d694c;
+    color: #ccbaa8;
+    font-size: 20px;
+    border: thick double #441a03;
+    box-shadow: 5px -5px 10px 5px #032D44;
+    font-weight: bold;
+}
+
+.moves-box table {
+    cursor: default;
+}
+
+.moves-box table tr {
+    color: #ccbaa8;
+    background-color: #7d694c;
+}
+
+/* 2 4 6 8 10 12*/
+.moves-box table tr.honest {
+    background-color: #816d51;
+    color: #dac0a7;
+}
+
+.moves-box table tr:hover {
+    color: #f0efe9;
+}
+
+.moves-box table tr td {
+    border: solid #887353;
+}
+
+.moves-header {
+    margin: auto;
+    margin-left: 15px;
+    margin-bottom: 12px;
+    display: grid;
+    background-color: #7d694c;
+    color: #000000;
+    font-size: 20px;
+    border: solid #441a03;
+    box-shadow: 5px -5px 10px 5px #032D44;
+    text-shadow: 1px -1px 22px #9e943b;
+    font-weight: bold;
+    height: 50px;
+}
+
+.moves-header-sub2 {
+    margin-top: 1px;
+    margin-bottom: 1px;
+    margin-left: 1px;
+    margin-right: 1px;
+    border-width: 2px;
+    padding: 0px;
+    border: solid #b5915f;
+}
+
+.moves-header h1 {
+    padding-top: 5px;
+    margin-left: 40px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    font-family: font_rule1;
+}
+
+.move-pagenation-box {
+    padding: 3px;
+    margin: 7px;
+}
+
+/* Это было из файла: assets/css/ui_elements/clock.css */
+.clock-box {
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+
+
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    /*background-color: #476345;*/
+    background: #292929;
+    color: #000;
+    border: #292929 ridge 5px;
+}
+
+.clock {
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+
+    font-family: digital_numbers;
+    font-size: 70px;
+    background: #827B5E;
+    color: #000;
+    letter-spacing: 5px; /* отступі между ціфрами */
+    border: #292929 ridge 1px;
+    margin: 0px;
+}
+
+
+/*
+    background: #292929;
+
+    background: #827B5E;
+    color: #000;
+
+*/
+  </style>
+  
+  
+  
+  
+  
+  
+  
+
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+
+  
+
+</head>
+<body>
+<!--
+  examples
+https://stackoverflow.com/questions/9087332/making-a-wrapper-in-html5-css3
+https://css-tricks.com/snippets/html/html5-page-structure/
+https://www.w3docs.com/snippets/html/html5-page-structure.html
+https://developer.mozilla.org/ru/docs/Web/CSS/CSS_Flexible_piece_Layout/Aligning_Items_in_a_Flex_Container
+
+https://developer.mozilla.org/ru/docs/Learn/CSS/CSS_layout/Flexbox
+
+https://getbootstrap.com/docs/4.3/examples/album/
+
+https://developer.mozilla.org/ru/docs/Web/CSS/flex
+
+Если свойство float справляется со своей задачей, то и используйте его.
+Морально устарела несемантичная вёрстка (теги div везде, вместо более семантичных header, navigation, section, article и т.д.), но сам флоат вполне хорош.
+Флекс отчасти более удобен, но работает совсем по другому. Так что не стоит считать его полной заменой флоатам.
+Кстати, ещё можно использовать inline-block. Хотя и у него свои задачи.
+
+-->
+<header>
+
+<!-- nav  -->
+<nav class="navbar">
+  <a href="#home" class="active">Home</a>
+  <a href="#openModal">Открыть модальное окно</a>
+  <div class="dropdown">
+    <button class="dropbtn">Меню выподающее</button>
+    <div class="dropdown-content">
+      <div><a href="#">Link 1</a></div>
+      <div><a href="#">Link 2</a></div>
+      <div><a href="#openModal">Открыть модальное окно</a></div>
+    </div>
+  </div>
+
+	<div class="dropdown">
+    <button class="dropbtn">Pages</button>
+    <div class="dropdown-content">
+
+      <a href="board.html">Board</a>
+	  <a href="board180.html">Board 180</a>
+      <a href="staticstic.html">Staticstic</a>
+	  <a href="gamelist.html">gamelist</a>
+      <a href="playerlist.html">player list</a>
+	  <a href="creategame.html">create game</a>
+	  <a href="profile.html">profile</a>
+	  <a href="gamehistory.html">game history</a>
+	  <a href="gui.html">gui example</a>
+	  <a href="#openModal">modal example</a>
+
+    </div>
+  </div>
+
+</nav>
+
+
+<nav class="navbar">
+
+    <div class="auth-block">
+      <div><img src="img_avatar2.png" class="nav-profile"></div>
+      <span>Joan</span>
+    </div>
+
+    <div class="dropdown">
+      <button class="dropbtn">
+        <i>▼</i>
+      </button>
+      <div class="dropdown-content">
+        <div><a href="#">Link 1</a></div>
+        <div><a href="#">Link 2</a></div>
+      </div>
+    </div>
+
+    <div><a href="#news">Sign UP</a></div>
+    <div><a href="#contact">Log In</a></div>
+    <div><a href="#about">Log Out</a></div>
+</nav>
+
+
+</header>
+
+<!-- центр блок-->
+<div class="wrapper">
+<!-- chessboard -->
+<section>
+  <div class="container-center">
+  <!-- LEFT BLOCK -->
+      <div class="container-blocks">
+
+        <div class="container-box black-box player-card">
+
+            <div>
+            <img src="img_avatar2.png" alt="Avatar woman" class="profile">
+            <span>
+              <h2 class="active-player">Jane Flex</h2>
+            </span>
+            </div>
+
+            <div class="profile">
+              <div class="raiting"><span class="raiting">Raiting </span>
+                <span class="raiting-num">1200</span>
+              </div>
+            </div>
+
+            <div class="container-mini">
+              <img src="eu.svg" class="flag">
+
+              <div class="wins-cont">
+                <div class="wins">WINS</div>
+                <div class="wins-num">5</div>
+              </div>
+            </div>
+
+            <div class="clock-box">
+              <div class="clock" id="clock1">
+                03:45:50
+              </div>
+            </div>
+
+        </div>
+
+        <br>
+
+          <div class="container-box black-box player-card">
+
+            <div>
+              <img src="img_avatar.png" alt="Avatar man" class="profile">
+              <span>
+                <h2>John Doe</h2>
+              </span>
+            </div>
+
+            <div class="profile">
+              <div class="raiting"><span class="raiting">Raiting </span>
+                <span class="raiting-num">1200</span>
+              </div>
+            </div>
+
+            <div class="container-mini">
+              <img src="ua.svg" class="flag">
+
+              <div class="wins-cont">
+                <div class="wins">WINS</div>
+                <div class="wins-num">5</div>
+              </div>
+
+            </div>
+
+            <div class="clock-box">
+              <div class="clock" id="clock1">
+                03:45:50
+              </div>
+            </div>
+
+          </div>
+
+
+      </div> <!-- <div class="container-blocks "> -->
+
+<!-- CENTRAL CONTENT -->
+<main>
+
+<div class="container-chessboard-up2-border"> <!-- border -->
+<div class="container-chessboard">
+
+<div class="left-box-chessboard">
+  <div class="chessboard-spacer"></div>
+  <div class="chessboard-number">
+    <div>8</div>
+  </div>
+  <div class="chessboard-number">
+    <div>7</div>
+  </div>
+  <div class="chessboard-number">
+    <div>6</div>
+  </div>
+  <div class="chessboard-number">
+    <div>5</div>
+  </div>
+  <div class="chessboard-number">
+    <div>4</div>
+  </div>
+  <div class="chessboard-number">
+    <div>3</div>
+  </div>
+  <div class="chessboard-number">
+    <div>2</div>
+  </div>
+  <div class="chessboard-number">
+    <div>1</div>
+  </div>
+  <div class="chessboard-spacer"></div>
+</div>
+
+<div class="chessboard">
+  <div class="top">
+    <div class="chessboard-inner">
+      <div class="piece-inner"><span>A</span></div>
+      <div class="piece-inner"><span>B</span></div>
+      <div class="piece-inner"><span>C</span></div>
+      <div class="piece-inner"><span>D</span></div>
+      <div class="piece-inner"><span>E</span></div>
+      <div class="piece-inner"><span>F</span></div>
+      <div class="piece-inner"><span>G</span></div>
+      <div class="piece-inner"><span>H</span></div>
+    </div>
+  </div>
+  <!-- 8 -->
+  <div class="piece droppable" id="B8" chess_pos="B8" math_pos="12"><img class="draggable figure" src="Black_Rook.svg" id="chessfigure32" fid="32" fname="Black Bishop" chess_pos="B8" math_pos="12"></div>
+  <!-- element.setAttribute('src', 'black_bishop.svg'); -->
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="Black_Knight.svg"  id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="Black_Bishop.svg"  id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="Black_Queen.svg"   id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="Black_King.svg"    id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="Black_Bishop.svg"  id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="Black_Knight.svg"  id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="Black_Rook.svg"    id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+<!-- 7 -->
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="Black_Pawn.svg" id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="Black_Pawn.svg" id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="Black_Pawn.svg" id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="Black_Pawn.svg" id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="Black_Pawn.svg" id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="Black_Pawn.svg" id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="Black_Pawn.svg" id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="Black_Pawn.svg" id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+<!-- 6 -->
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+<!-- 5 -->
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <!-- <div class="piece droppable piece-green"></div> -->
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+
+
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <!-- <div class="piece droppable piece-green"></div> -->
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+  <div class="piece droppable"></div>
+
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="White_Pawn.svg"  id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="White_Pawn.svg"  id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="White_Pawn.svg"  id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="White_Pawn.svg"  id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="White_Pawn.svg"  id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="White_Pawn.svg"  id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="White_Pawn.svg"  id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="White_Pawn.svg"  id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+
+  <div class="piece droppable" id="B8" chess_pos="B8" math_pos="12"><img class="draggable figure" src="White_Rook.svg" id="chessfigure32" fid="32" fname="White Bishop" chess_pos="B8" math_pos="12"></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="White_Knight.svg"  id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="White_Bishop.svg"  id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="White_Queen.svg"   id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="White_King.svg"    id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="White_Bishop.svg"  id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="White_Knight.svg"  id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+  <div class="piece droppable" id="" chess_pos="" math_pos=""><img class="draggable figure" src="White_Rook.svg"    id="chessfigure" fid="" fname="" chess_pos="" math_pos=""></div>
+
+  <div class="bottom">
+    <div class="chessboard-inner">
+      <div class="piece-inner"><span>A</span></div>
+      <div class="piece-inner"><span>B</span></div>
+      <div class="piece-inner"><span>C</span></div>
+      <div class="piece-inner"><span>D</span></div>
+      <div class="piece-inner"><span>E</span></div>
+      <div class="piece-inner"><span>F</span></div>
+      <div class="piece-inner"><span>G</span></div>
+      <div class="piece-inner"><span>H</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="right-box-chessboard">
+    <div class="chessboard-spacer"></div>
+    <div class="chessboard-number">
+      <div>8</div>
+    </div>
+    <div class="chessboard-number">
+      <div>7</div>
+    </div>
+    <div class="chessboard-number">
+      <div>6</div>
+    </div>
+    <div class="chessboard-number">
+      <div>5</div>
+    </div>
+    <div class="chessboard-number">
+      <div>4</div>
+    </div>
+    <div class="chessboard-number">
+      <div>3</div>
+    </div>
+    <div class="chessboard-number">
+      <div>2</div>
+    </div>
+    <div class="chessboard-number">
+      <div>1</div>
+    </div>
+    <div class="chessboard-spacer"></div>
+
+</div>
+
+</div> <!-- container chesboard end -->
+</div> <!-- border-->
+
+<div class="chessboard-footer-container">
+
+  <div class="chessboard-input">
+      <input type="text" id="name" name="name" value="e2-e4">
+  </div>
+
+  <div class="chessboard-button-container">
+    <button class="btm-chessboard">Походить</button>
+  </div>
+
+</div>
+
+</main>
+
+<!-- right-block -->
+<div class="moves-container">
+  <div class="moves-header">
+    <div class="moves-header-sub2">
+      <h1>Запись Партии</h1>
+    </div>
+  </div>
+  <div class="moves-box">
+  <table>
+    <tr>
+      <td class="note-num">1</td>
+      <td class="note-white">e2-e4</td>
+      <td class="note-black">e7-e5</td>
+    </tr>
+    <tr class="honest">
+      <td class="note-num">1</td>
+      <td class="note-white">e2-e4</td>
+      <td class="note-black">e7-e5</td>
+    </tr><tr>
+      <td class="note-num">1</td>
+      <td class="note-white">e2-e4</td>
+      <td class="note-black">e7-e5</td>
+    </tr>
+    <tr class="honest">
+      <td class="note-num">1</td>
+      <td class="note-white">e2-e4</td>
+      <td class="note-black">e7-e5</td>
+    </tr><tr>
+      <td class="note-num">1</td>
+      <td class="note-white">e2-e4</td>
+      <td class="note-black">e7-e5</td>
+    </tr>
+    <tr class="honest">
+      <td class="note-num">1</td>
+      <td class="note-white">e2-e4</td>
+      <td class="note-black">e7-e5</td>
+    </tr><tr>
+      <td class="note-num">1</td>
+      <td class="note-white">e2-e4</td>
+      <td class="note-black">e7-e5</td>
+    </tr>
+    <tr class="honest">
+      <td class="note-num">1</td>
+      <td class="note-white">e2-e4</td>
+      <td class="note-black">e7-e5</td>
+    </tr><tr>
+      <td class="note-num">1</td>
+      <td class="note-white">e2-e4</td>
+      <td class="note-black">e7-e5</td>
+    </tr>
+    <tr class="honest">
+      <td class="note-num">1</td>
+      <td class="note-white">e2-e4</td>
+      <td class="note-black">e7-e5</td>
+    </tr><tr>
+      <td class="note-num">1</td>
+      <td class="note-white">e2-e4</td>
+      <td class="note-black">e7-e5</td>
+    </tr>
+    <tr class="honest">
+      <td class="note-num">1</td>
+      <td class="note-white">e2-e4</td>
+      <td class="note-black">e7-e5</td>
+    </tr><tr>
+      <td class="note-num">1</td>
+      <td class="note-white">e2-e4</td>
+      <td class="note-black">e7-e5</td>
+    </tr>
+    <tr class="honest">
+      <td class="note-num">1</td>
+      <td class="note-white">e2-e4</td>
+      <td class="note-black">e7-e5</td>
+    </tr><tr>
+      <td class="note-num">1</td>
+      <td class="note-white">e2-e4</td>
+      <td class="note-black">e7-e5</td>
+    </tr>
+    <tr class="honest">
+      <td class="note-num">1</td>
+      <td class="note-white">e2-e4</td>
+      <td class="note-black">e7-e5</td>
+    </tr>
+    <tr>
+      <td class="note-num">17</td>
+      <td class="note-white">e2-e4</td>
+      <td class="note-black">e7-e5</td>
+    </tr>
+  </table>
+  <div class="move-pagenation-box">
+    <button class="btn-black">Назад</button>
+    <label>100</label>
+    <button class="btn-black">Далее</button>
+  </div>
+
+</div>
+
+</div>
+
+<div class="container-blocks">
+
+  <br>
+  <br>
+
+  <div class="container-box black-box">
+      блоки
+
+      блоки
+
+      блоки
+
+      друзяки
+
+      последние Партии
+
+      всякая фигня
+  </div>
+
+  <div class="container-box black-box">
+    список друщей 
+      блоки
+
+      блоки
+
+      блоки
+
+      друзяки
+
+      последние Партии
+
+      всякая фигня
+  </div>
+
+  <div class="container-box black-box scroll" style="height: 350px;">
+    сыграные парти таблица
+    text texttext texttext texttext texttext texttext text
+    text texttext texttext texttext texttext texttext text
+    text texttext texttext texttext texttext texttext text
+    text texttext texttext texttext texttext texttext text
+    text texttext texttext texttext texttext texttext text
+    text texttext texttext texttext texttext texttext text
+    text texttext texttext texttext texttext texttext text
+    text texttext texttext texttext texttext texttext text
+    <br>
+    text texttext texttext texttext texttext texttext text
+    text texttext texttext texttext texttext texttext text
+    text texttext texttext texttext texttext texttext text
+    text texttext texttext texttext texttext texttext text
+    text texttext texttext texttext texttext texttext text
+    <br>
+
+    text texttext texttext texttext texttext texttext text
+    text texttext texttext texttext texttext texttext text
+    text texttext texttext texttext texttext texttext text
+    text texttext texttext texttext texttext texttext text
+    text texttext texttext texttext texttext texttext text
+    <br>
+
+
+  </div>
+
+</div>
+<!-- -conatainer end-->
+
+</div>
+
+</section>
+<!-- chessboard end-->
+
+
+<!-- wrapper end-->
+</div>
+
+<footer>
+  <div>
+    Develop by Asguard01
+  </div>
+</footer>
+
+
+<!-- Modals -->
+
+<!-- https://itchief.ru/html-and-css/modal -->
+
+<!-- Trigger/Open the Modal -->
+<!-- openModal - id модального окна (элемента div) -->
+<div id="openModal" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <h3 class="modal-title">Название</h3>
+
+        <a href="#close" title="Close" class="close">×</a>
+      </div>
+      <div class="modal-body">
+
+        <p>Содержимое модального окна...</p>
+
+        <div class="modal-input">
+          <input type="text" id="name" name="name" value="text here">
+        </div>
+
+        <br>
+        <button class="btn-white">Кнопка</button>
+        <button class="btn-white">Кнопка</button>
+        <button class="btn-white">Кнопка</button>
+
+        <h1>Custom Checkboxes</h1>
+        <div class="checkbox-container">
+          <label class="custom-checkbox">
+            <input type="checkbox" value="value-1">
+            <span>Indigo</span>
+          </label>
+        </div>
+        <div class="checkbox-container">
+          <label class="custom-checkbox">
+            <input type="checkbox" value="value-1" disabled>
+            <span>bla</span>
+          </label>
+        </div>
+        <div class="checkbox-container">
+          <label class="custom-checkbox">
+            <input type="checkbox" value="value-1">
+            <span>lol</span>
+          </label>
+        </div>
+        <div class="checkbox-container">
+          <label class="custom-checkbox">
+            <input type="checkbox" value="value-1">
+            <span>kurwa</span>
+          </label>
+        </div>
+
+        <!-- RANGE -->
+        <div class="range_container ">
+          <p>Custom range slider:</p>
+          <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+        </div>
+
+        <!-- RADIO-->
+          <div class="radio-container">
+            <label class="custom-radio">
+              <input type="radio" name="color" value="indigo">
+              <span>Indigo</span>
+            </label>
+          </div>
+
+          <div class="radio-container">
+            <label class="custom-radio">
+              <input type="radio" name="color" value="red">
+              <span>Red</span>
+            </label>
+          </div>
+
+          <div class="radio-container">
+            <label class="custom-radio">
+              <input type="radio" name="color" value="brown" disabled="disabled">
+              <span>Brown</span>
+            </label>
+          </div>
+
+          <div class="radio-container">
+            <label class="custom-radio">
+              <input type="radio" name="color" value="yellow">
+              <span>Yellow</span>
+            </label>
+          </div>
+
+          <div class="radio-container">
+            <label class="custom-radio">
+              <input type="radio" name="color" value="green">
+              <span>Green</span>
+            </label>
+          </div>
+
+          <!-- RADIO end-->
+
+          процес бар
+
+          1) активность при наведении на елекмент
+
+
+          <div class="custom-select" style="width:200px;">
+            <select>
+              <option value="0">Select car:</option>
+              <option value="1">Audi</option>
+              <option value="2">BMW</option>
+              <option value="3">Citroen</option>
+              <option value="4">Ford</option>
+              <option value="5">Honda</option>
+              <option value="6">Jaguar</option>
+              <option value="7">Land Rover</option>
+              <option value="8">Mercedes</option>
+              <option value="9">Mini</option>
+              <option value="10">Nissan</option>
+              <option value="11">Toyota</option>
+              <option value="12">Volvo</option>
+            </select>
+          </div>
+            00
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Modals -->
+<!-- JS: содержимое подключенных файлов собрано внутрь песочницы -->
+<script>
+// Это было из файла: assets/js/drag_drop_manager.js
+var DragManager = new function() {
+
+  /**
+   * составной объект для хранения информации о переносе:
+   * {
+   *   elem - элемент, на котором была зажата мышь
+   *   avatar - аватар
+   *   downX/downY - координаты, на которых был mousedown
+   *   shiftX/shiftY - относительный сдвиг курсора от угла элемента
+   * }
+   */
+  var dragObject = {};
+
+  var self = this;
+
+  function onMouseDown(e) {
+
+    if (e.which != 1) return;
+
+    var elem = e.target.closest('.draggable');
+    if (!elem) return;
+
+    dragObject.elem = elem;
+
+    // запомним, что элемент нажат на текущих координатах pageX/pageY
+    dragObject.downX = e.pageX;
+    dragObject.downY = e.pageY;
+
+    return false;
+  }
+
+  function onMouseMove(e) {
+    if (!dragObject.elem) return; // элемент не зажат
+
+    if (!dragObject.avatar) { // если перенос не начат...
+      var moveX = e.pageX - dragObject.downX;
+      var moveY = e.pageY - dragObject.downY;
+
+      // если мышь передвинулась в нажатом состоянии недостаточно далеко
+      if (Math.abs(moveX) < 3 && Math.abs(moveY) < 3) {
+        return;
+      }
+
+      // начинаем перенос
+      dragObject.avatar = createAvatar(e); // создать аватар
+      if (!dragObject.avatar) { // отмена переноса, нельзя "захватить" за эту часть элемента
+        dragObject = {};
+        return;
+      }
+
+      // аватар создан успешно
+      // создать вспомогательные свойства shiftX/shiftY
+      var coords = getCoords(dragObject.avatar);
+      dragObject.shiftX = dragObject.downX - coords.left;
+      dragObject.shiftY = dragObject.downY - coords.top;
+
+      startDrag(e); // отобразить начало переноса
+    }
+
+    // отобразить перенос объекта при каждом движении мыши
+    dragObject.avatar.style.left = e.pageX - dragObject.shiftX + 'px';
+    dragObject.avatar.style.top = e.pageY - dragObject.shiftY + 'px';
+
+    return false;
+  }
+
+  function onMouseUp(e) {
+    if (dragObject.avatar) { // если перенос идет
+      finishDrag(e);
+    }
+
+    // перенос либо не начинался, либо завершился
+    // в любом случае очистим "состояние переноса" dragObject
+    dragObject = {};
+  }
+
+  function finishDrag(e) {
+    var dropElem = findDroppable(e);
+
+    if (!dropElem) {
+      self.onDragCancel(dragObject);
+    } else {
+      self.onDragEnd(dragObject, dropElem);
+    }
+  }
+
+  function createAvatar(e) {
+
+    // запомнить старые свойства, чтобы вернуться к ним при отмене переноса
+    var avatar = dragObject.elem;
+    var old = {
+      parent: avatar.parentNode,
+      nextSibling: avatar.nextSibling,
+      position: avatar.position || '',
+      left: avatar.left || '',
+      top: avatar.top || '',
+      zIndex: avatar.zIndex || ''
+    };
+
+    // функция для отмены переноса
+    avatar.rollback = function() {
+      old.parent.insertBefore(avatar, old.nextSibling);
+      avatar.style.position = old.position;
+      avatar.style.left = old.left;
+      avatar.style.top = old.top;
+      avatar.style.zIndex = old.zIndex
+    };
+
+    return avatar;
+  }
+
+  function startDrag(e) {
+    var avatar = dragObject.avatar;
+
+    // инициировать начало переноса
+    document.body.appendChild(avatar);
+    avatar.style.zIndex = 10;
+    avatar.style.position = 'absolute';
+  }
+
+  function findDroppable(event) {
+    // спрячем переносимый элемент
+    dragObject.avatar.hidden = true;
+
+    // получить самый вложенный элемент под курсором мыши
+    var elem = document.elementFromPoint(event.clientX, event.clientY);
+
+    // показать переносимый элемент обратно
+    dragObject.avatar.hidden = false;
+
+    if (elem == null) {
+      // такое возможно, если курсор мыши "вылетел" за границу окна
+      return null;
+    }
+
+    return elem.closest('.droppable');
+  }
+
+  document.onmousemove = onMouseMove;
+  document.onmouseup = onMouseUp;
+  document.onmousedown = onMouseDown;
+
+  this.onDragEnd = function(dragObject, dropElem) {};
+  this.onDragCancel = function(dragObject) {};
+
+};
+
+
+function getCoords(elem) { // кроме IE8-
+  var box = elem.getBoundingClientRect();
+
+  return {
+    top: box.top + pageYOffset,
+    left: box.left + pageXOffset
+  };
+
+}
+
+// Это было из файла: assets/js/drag_drop_use.js
+var post_drop = 'post-drop';
+
+DragManager.onDragCancel = function(dragObject) {
+    // dragObject.avatar.rollback();
+  };
+  // перетащили элемент
+  DragManager.onDragEnd = function(dragObject, dropElem) {
+    // dragObject - слон
+    // dropElem - клетка
+
+    // dragObject.elem.style.display = 'none';
+    
+    console.log(dropElem);
+    // dropElem.style.background = 'green';
+    //dropElem.style.background = 'green';
+    //dropElem.style.background = 'lol';
+    dropElem.classList.add(post_drop);
+
+    setTimeout(function() {
+      dropElem.classList.remove(post_drop);
+    }, 200);
+  };
+
+// Это было из файла: assets/js/modal.js
+document.addEventListener("DOMContentLoaded", function () {
+    var scrollbar = document.body.clientWidth - window.innerWidth + 'px';
+/*    console.log(scrollbar);*/
+    document.querySelector('[href="#openModal"]').addEventListener('click', function () {
+        document.body.style.overflow = 'hidden';
+        document.querySelector('#openModal').style.marginLeft = scrollbar;
+    });
+    document.querySelector('[href="#close"]').addEventListener('click', function () {
+        document.body.style.overflow = 'visible';
+        document.querySelector('#openModal').style.marginLeft = '0px';
+    });
+});
+
+// Это было из файла: assets/js/select_box.js
+var x, i, j, l, ll, selElmnt, a, b, c;
+/* Look for any elements with the class "custom-select": */
+x = document.getElementsByClassName("custom-select");
+l = x.length;
+for (i = 0; i < l; i++) {
+    selElmnt = x[i].getElementsByTagName("select")[0];
+    ll = selElmnt.length;
+    /* For each element, create a new DIV that will act as the selected item: */
+    a = document.createElement("DIV");
+    a.setAttribute("class", "select-selected");
+    a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+    x[i].appendChild(a);
+    /* For each element, create a new DIV that will contain the option list: */
+    b = document.createElement("DIV");
+    b.setAttribute("class", "select-items select-hide");
+    for (j = 1; j < ll; j++) {
+        /* For each option in the original select element,
+        create a new DIV that will act as an option item: */
+        c = document.createElement("DIV");
+        c.innerHTML = selElmnt.options[j].innerHTML;
+        c.addEventListener("click", function (e) {
+            /* When an item is clicked, update the original select box,
+            and the selected item: */
+            var y, i, k, s, h, sl, yl;
+            s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+            sl = s.length;
+            h = this.parentNode.previousSibling;
+            for (i = 0; i < sl; i++) {
+                if (s.options[i].innerHTML == this.innerHTML) {
+                    s.selectedIndex = i;
+                    h.innerHTML = this.innerHTML;
+                    y = this.parentNode.getElementsByClassName("same-as-selected");
+                    yl = y.length;
+                    for (k = 0; k < yl; k++) {
+                        y[k].removeAttribute("class");
+                    }
+                    this.setAttribute("class", "same-as-selected");
+                    break;
+                }
+            }
+            h.click();
+        });
+        b.appendChild(c);
+    }
+    x[i].appendChild(b);
+    a.addEventListener("click", function (e) {
+        /* When the select box is clicked, close any other select boxes,
+        and open/close the current select box: */
+        e.stopPropagation();
+        closeAllSelect(this);
+        this.nextSibling.classList.toggle("select-hide");
+        this.classList.toggle("select-arrow-active");
+    });
+}
+
+function closeAllSelect(elmnt) {
+    /* A function that will close all select boxes in the document,
+    except the current select box: */
+    var x, y, i, xl, yl, arrNo = [];
+    x = document.getElementsByClassName("select-items");
+    y = document.getElementsByClassName("select-selected");
+    xl = x.length;
+    yl = y.length;
+    for (i = 0; i < yl; i++) {
+        if (elmnt == y[i]) {
+            arrNo.push(i)
+        } else {
+            y[i].classList.remove("select-arrow-active");
+        }
+    }
+    for (i = 0; i < xl; i++) {
+        if (arrNo.indexOf(i)) {
+            x[i].classList.add("select-hide");
+        }
+    }
+}
+
+/* If the user clicks anywhere outside the select box,
+then close all select boxes: */
+document.addEventListener("click", closeAllSelect);
+
+// Это было из файла: assets/js/clock.js
+function clock() {// We create a new Date object and assign it to a variable called "time".
+    var time = new Date(),
+
+        // Access the "getHours" method on the Date object with the dot accessor.
+        hours = time.getHours(),
+        // Access the "getMinutes" method with the dot accessor.
+        minutes = time.getMinutes(),
+        seconds = time.getSeconds();
+
+        hours = 2;
+        minutes = 60 - minutes;
+        seconds = 60 - seconds;
+
+    document.querySelectorAll('.clock')[0].innerHTML = harold(hours) + ":" + harold(minutes) + ":" + harold(seconds);
+
+    function harold(standIn) {
+        if (standIn < 10) {
+            standIn = '0' + standIn
+        }
+        return standIn;
+    }
+}
+setInterval(clock, 1000);
+</script>
+
+
+
+
+
+
+</body>
+</html>
