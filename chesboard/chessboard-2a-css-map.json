@@ -1,0 +1,513 @@
+{
+  "meta": {
+    "source_file": "chessboard-2a.html",
+    "analyzed_block": "<style> ... </style>, строки 11–597",
+    "generated_for_version": "2a",
+    "total_css_lines": 587,
+    "stats": {
+      "unique_classes": 46,
+      "custom_properties_root": 28,
+      "media_queries": 4,
+      "keyframe_animations": 1,
+      "section_comment_blocks": 12,
+      "note_on_grep": "Наивный grep по шаблону \\.[a-zA-Z-]+ находит 47 совпадений, но одно из них ('.hidden') — это упоминание внутри текстового комментария (объясняющего, почему используется атрибут [hidden], а не класс .hidden), а не реальный селектор. Реальных классов — 46."
+    },
+    "naming_convention": {
+      "pattern": "<widget>-<element>[-<sub-element>]",
+      "description": "Плоский BEM-подобный нейминг: иерархия виджета выражена дефисом в имени класса (header-nav-container, header-nav-brand, header-nav-link...), а не вложенными CSS-комбинаторами. Комбинаторы (потомок, :nth-child и т.п.) используются только там, где элемент — сырой HTML-тег без собственного класса (table/tr/td внутри .moves-list, input внутри .settings-modal-radio-option, span внутри .board-ranks/.board-files, button внутри .moves-pagination/.settings-modal-actions).",
+      "state_mechanism": "Состояния и модификаторы НИГДЕ не выражены отдельным классом-модификатором (нет .is-active/.is-open и т.п.). Вместо этого — атрибуты data-state (одиночное значение через [data-state=\"x\"] либо мультизначное через [data-state~=\"x\"]), атрибут data-side, нативный булев атрибут [hidden], либо нативные псевдоклассы :hover/:disabled/:has(). Это единственный механизм состояний во всём файле — применяется последовательно."
+    }
+  },
+  "design_tokens": {
+    "selector": ":root",
+    "css_lines": "31-63",
+    "groups": {
+      "color_surface": [
+        "--page-bg",
+        "--page-bg-raised",
+        "--page-text",
+        "--page-text-dim"
+      ],
+      "color_accent_gold": [
+        "--gold",
+        "--gold-strong"
+      ],
+      "color_wood_board": [
+        "--wood-dark",
+        "--wood-mid",
+        "--wood-mid-alt",
+        "--square-light",
+        "--square-dark",
+        "--board-frame-outer",
+        "--board-frame-inner"
+      ],
+      "color_semantic": [
+        "--danger",
+        "--focus-ring"
+      ],
+      "typography": [
+        "--font-display",
+        "--font-body",
+        "--font-mono"
+      ],
+      "radius": [
+        "--radius-sm",
+        "--radius-md",
+        "--radius-lg"
+      ],
+      "spacing_scale": [
+        "--space-1",
+        "--space-2",
+        "--space-3",
+        "--space-4",
+        "--space-5",
+        "--space-6"
+      ],
+      "effects": [
+        "--shadow-card"
+      ]
+    },
+    "observation": "Токены покрывают почти всё, но встречаются отдельные захардкоженные значения вне системы токенов: цвет фона шапки #1c1c1c, цвет ссылки #e7d3b3 (почти равен --gold-strong, но записан заново буквально), и несколько rgba(...) оверлеев/теней прямо в правилах. Функционально не критично, но нарушает единообразие палитры."
+  },
+  "global_layers": {
+    "reset": {
+      "css_lines": "13-27",
+      "selectors": [
+        "*, *::before, *::after",
+        "html, body",
+        "body",
+        "button",
+        "input",
+        "img",
+        "ul",
+        "a"
+      ],
+      "role": "Базовый CSS-reset, не привязан к виджетам"
+    },
+    "accessibility": {
+      "css_lines": "65-89",
+      "selectors": [
+        ":focus-visible",
+        ".visually-hidden",
+        "@media (prefers-reduced-motion: reduce)"
+      ],
+      "role": "Сквозной слой доступности: видимый фокус, скрытие текста только для скринридеров, отключение анимаций по системной настройке"
+    },
+    "responsive": {
+      "css_lines": "129-150 (внутри header-nav), 577-595 (внутри PAGE ORCHESTRATOR LAYOUT / RESPONSIVE)",
+      "breakpoints": {
+        "max-width: 767px": [
+          "header-nav-links превращается в выпадающее мобильное меню, header-nav-menu-toggle становится видимым",
+          "chess-page-board-row: меньше отступы/gap",
+          "chess-page-side: 100% ширины вместо фиксированной",
+          "header-nav-brand: меньше шрифт"
+        ],
+        "max-width: 1199px": [
+          "chess-page-board-row: justify-content: center"
+        ]
+      }
+    }
+  },
+  "components_matryoshka": {
+    "header-nav": {
+      "css_lines": "91-150",
+      "root_class": ".header-nav-container",
+      "reused_across_site": true,
+      "note": "В HTML помечен комментарием «Переиспользуется на других страницах сайта; см. HeaderNavController» — это общесайтовый, а не только шахматный виджет",
+      "tree": {
+        ".header-nav-container": {
+          "states": [
+            "[data-state=\"collapsed\"] — влияет на видимость .header-nav-links, но только внутри @media ≤767px"
+          ],
+          "children": {
+            ".header-nav-brand": {},
+            ".header-nav-menu-toggle": {
+              "note": "display:none на десктопе; display:block только в @media ≤767px"
+            },
+            ".header-nav-links": {
+              "children": {
+                ".header-nav-link": {
+                  "states": [
+                    ":hover",
+                    "[data-state=\"active\"]"
+                  ]
+                }
+              },
+              "responsive_override": "@media ≤767px: position:absolute, flex-direction:column — раскрывающееся мобильное меню"
+            }
+          }
+        }
+      }
+    },
+    "player-card": {
+      "css_lines": "152-207",
+      "root_class": ".player-card-container",
+      "instances_on_page": 2,
+      "tree": {
+        ".player-card-container": {
+          "states": [
+            "[data-state=\"active-turn\"] — outline вокруг карточки того, чей сейчас ход"
+          ],
+          "children": {
+            ".player-card-avatar": {
+              "note": "круглый аватар с инициалами"
+            },
+            ".player-card-body": {
+              "children": {
+                ".player-card-name": {},
+                ".player-card-meta": {
+                  "children": {
+                    ".player-card-flag": {
+                      "note": "img флага страны"
+                    },
+                    "span[data-ref=\"player-card-rating\"]": {
+                      "note": "без выделенного класса — стилизуется наследованием от .player-card-meta"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "clock": {
+      "css_lines": "209-237",
+      "root_class": ".clock-container",
+      "instances_on_page": 2,
+      "tree": {
+        ".clock-container": {
+          "states": [
+            "[data-state=\"active\"]",
+            "[data-state=\"low-time\"]",
+            "[data-state=\"expired\"]"
+          ],
+          "children": {}
+        }
+      }
+    },
+    "board": {
+      "css_lines": "239-345",
+      "root_class": ".board-container",
+      "tree": {
+        ".board-container": {
+          "layout": "CSS grid 24px 1fr / 1fr 24px — координаты сверху/слева, сама доска — отдельная grid-область",
+          "children": {
+            ".board-ranks": {
+              "children": {
+                "span (без класса)": {
+                  "note": "подписи 8..1"
+                }
+              }
+            },
+            ".board-files": {
+              "children": {
+                "span (без класса)": {
+                  "note": "подписи a..h"
+                }
+              }
+            },
+            ".board-grid": {
+              "role_attr": "role=\"grid\"",
+              "children": {
+                ".board-square": {
+                  "states": [
+                    "[data-state~=\"light\"] / [data-state~=\"dark\"] — цвет клетки",
+                    "[data-state~=\"selected\"]::after — рамка выбранной клетки",
+                    "[data-state~=\"legal-target\"]::after — точка допустимого хода",
+                    "[data-state~=\"drag-over\"] — подсветка клетки под курсором при перетаскивании"
+                  ],
+                  "note": "Мультизначный data-state через [attr~=value], т.е. на одной клетке одновременно может быть несколько токенов состояния (например 'light selected')",
+                  "children": {
+                    ".board-piece": {
+                      "states": [
+                        "[data-state~=\"dragging\"] — полупрозрачность фигуры во время перетаскивания"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            ".board-drag-ghost": {
+              "states": [
+                "[hidden]"
+              ],
+              "note": "Не часть грида: fixed-позиционированный оверлей-«призрак» перетаскиваемой фигуры, следует за курсором"
+            }
+          }
+        }
+      }
+    },
+    "move-input": {
+      "css_lines": "347-389",
+      "root_class": ".move-input-container",
+      "tree": {
+        ".move-input-container": {
+          "element": "form",
+          "children": {
+            ".move-input-field": {
+              "states": [
+                "[data-state=\"invalid\"] — анимация move-input-shake при нераспознанном ходе"
+              ]
+            },
+            ".move-input-submit": {
+              "states": [
+                ":hover"
+              ],
+              "note": "Тот же класс используется ПОВТОРНО и как отдельная кнопка «Новая партия» в сайдбаре, вне формы (см. observations в JS-карте — cross_reference)"
+            }
+          }
+        },
+        ".move-input-hint": {
+          "note": "Вне .move-input-container — отдельный <p> с подсказкой формата хода, оформлен как самостоятельный служебный класс"
+        }
+      },
+      "keyframes": {
+        "move-input-shake": "css_lines 370-373, срабатывает вместе с [data-state=\"invalid\"]"
+      }
+    },
+    "moves-history": {
+      "css_lines": "391-457",
+      "root_class": ".moves-container",
+      "tree": {
+        ".moves-container": {
+          "children": {
+            ".moves-header": {
+              "note": "заголовок «Записи партии»"
+            },
+            ".moves-list": {
+              "role_attr": "role=\"log\"",
+              "children": {
+                "table (без класса)": {},
+                "tr (без класса)": {
+                  "states": [
+                    ":nth-child(even)"
+                  ]
+                },
+                "td (без класса)": {
+                  "states": [
+                    ":first-child"
+                  ]
+                },
+                ".moves-empty": {
+                  "note": "рендерится ВМЕСТО таблицы, когда ходов ещё не было"
+                }
+              }
+            },
+            ".moves-pagination": {
+              "children": {
+                "button (без класса, базовый стиль)": {
+                  "states": [
+                    ":disabled"
+                  ]
+                },
+                ".moves-pagination-page": {
+                  "note": "текст «Стр. N из M»"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "settings-modal": {
+      "css_lines": "459-543",
+      "root_class": ".settings-modal-container",
+      "tree": {
+        ".settings-modal-container": {
+          "states": [
+            "[hidden]"
+          ],
+          "role_attr": "role=\"dialog\", aria-modal=\"true\"",
+          "children": {
+            ".settings-modal-dialog": {
+              "children": {
+                ".settings-modal-title": {},
+                ".settings-modal-field": {
+                  "instances": "2 (цвет фигур, время на партию)",
+                  "children": {
+                    ".settings-modal-label": {},
+                    ".settings-modal-radio-group": {
+                      "role_attr": "role=\"radiogroup\"",
+                      "children": {
+                        ".settings-modal-radio-option": {
+                          "states": [
+                            ":has(input:checked) — нативный CSS-стейт без единой строки JS"
+                          ],
+                          "children": {
+                            "input[type=radio] (без класса)": {}
+                          }
+                        }
+                      }
+                    },
+                    ".settings-modal-range": {
+                      "note": "input[type=range] для времени партии"
+                    }
+                  }
+                },
+                ".settings-modal-actions": {
+                  "children": {
+                    "button (без класса, общий стиль)": {},
+                    ".settings-modal-cancel": {},
+                    ".settings-modal-confirm": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "chess-page-layout": {
+      "css_lines": "545-583",
+      "root_class": ".chess-page",
+      "role": "Layout-обёртка более высокого порядка: не создаёт новых визуальных виджетов, а расставляет уже существующие (header-nav, player-card, clock, board, move-input, moves-history, settings-modal) по сетке страницы",
+      "tree": {
+        ".chess-page": {
+          "children": {
+            ".chess-page-board-row": {
+              "children": {
+                ".chess-page-side": {
+                  "note": "используется дважды: слева — кнопка «Новая партия», справа — история ходов"
+                },
+                ".chess-page-match": {
+                  "children": {
+                    ".chess-page-player-row": {
+                      "states": [
+                        "[data-side=\"top\"] — flex-direction: row",
+                        "[data-side=\"bottom\"] — flex-direction: row-reverse"
+                      ],
+                      "note": "Содержит .player-card-container (локальное переопределение flex:1) и .clock-container"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "conditional_ui_grouping_options": [
+    {
+      "criterion": "По виджету (как уже физически сгруппировано в файле комментариями)",
+      "groups": {
+        "Навигация сайта": [
+          "header-nav"
+        ],
+        "Игровая партия — участники": [
+          "player-card",
+          "clock"
+        ],
+        "Игровая партия — доска": [
+          "board"
+        ],
+        "Игровая партия — ввод/история": [
+          "move-input",
+          "moves-history"
+        ],
+        "Диалоги": [
+          "settings-modal"
+        ],
+        "Каркас страницы": [
+          "chess-page-layout"
+        ],
+        "Сквозные слои": [
+          "design_tokens",
+          "reset",
+          "accessibility",
+          "responsive"
+        ]
+      }
+    },
+    {
+      "criterion": "По зоне макета страницы (что где физически находится на экране)",
+      "groups": {
+        "Шапка": [
+          "header-nav"
+        ],
+        "Левая колонка": [
+          "chess-page-side (кнопка новой партии)"
+        ],
+        "Центр — партия": [
+          "player-card x2",
+          "clock x2",
+          "board",
+          "move-input"
+        ],
+        "Правая колонка": [
+          "chess-page-side (moves-history)"
+        ],
+        "Поверх всего (оверлей)": [
+          "settings-modal"
+        ]
+      }
+    },
+    {
+      "criterion": "По переиспользуемости за пределами этой страницы",
+      "groups": {
+        "Общесайтовые (переиспользуются на других страницах)": [
+          "header-nav",
+          "visually-hidden",
+          ":focus-visible",
+          "design_tokens"
+        ],
+        "Специфичные для страницы шахматной партии": [
+          "player-card",
+          "clock",
+          "board",
+          "move-input",
+          "moves-history",
+          "settings-modal",
+          "chess-page-layout"
+        ]
+      }
+    },
+    {
+      "criterion": "По сложности состояний (сколько условных визуальных состояний у корневого класса виджета)",
+      "groups": {
+        "Без состояний": [
+          "header-nav-brand",
+          "moves-header",
+          "move-input-hint",
+          "player-card-flag"
+        ],
+        "Простое одно-значное состояние (1 атрибут, набор взаимоисключающих значений)": [
+          "clock-container (active/low-time/expired)",
+          "move-input-field (invalid)",
+          "header-nav-container (collapsed/expanded)",
+          "player-card-container (active-turn)"
+        ],
+        "Множественное/комбинируемое состояние": [
+          "board-square (light|dark + selected + legal-target + drag-over одновременно)",
+          "board-piece (dragging)"
+        ],
+        "Состояние без JS (чистый CSS :has())": [
+          "settings-modal-radio-option"
+        ]
+      }
+    },
+    {
+      "criterion": "По наличию ARIA-роли (доступность)",
+      "groups": {
+        "С явной ARIA-ролью": [
+          "board-grid (role=grid)",
+          "moves-list (role=log)",
+          "settings-modal-container (role=dialog)",
+          "settings-modal-radio-group (role=radiogroup)",
+          "clock-container (role=timer)"
+        ],
+        "Без явной роли (обычные/декоративные)": [
+          "остальные классы"
+        ]
+      }
+    }
+  ],
+  "observations": [
+    "'.hidden' — ложное срабатывание grep: это слово встречается только внутри текста CSS-комментария (объясняющего выбор [hidden] вместо класса), реального такого класса в файле нет.",
+    ".move-input-submit используется на двух семантически разных кнопках: submit-кнопка формы хода И кнопка «Новая партия» в сайдбаре. Визуально это осознанное переиспользование стиля «золотая пилюля», но имя класса «протекает» из контекста ввода хода на несвязанную кнопку.",
+    "Пагинация (.moves-pagination button) и общие action-кнопки модалки (.settings-modal-actions button) стилизуются через селектор по сырому тегу button, а не по отдельному классу — при добавлении в эти контейнеры любой другой кнопки в будущем она незапланированно унаследует этот стиль.",
+    "Состояния всюду выражены атрибутами (data-state/data-side/[hidden]) или нативными псевдоклассами, ни разу — классом-модификатором (.is-active и т.п.). Это единообразный и последовательно выдержанный приём по всему файлу.",
+    "Дизайн-токены покрывают почти всю палитру, но есть точечные захардкоженные цвета (#1c1c1c, #e7d3b3 и несколько rgba(...)), не заведённые в :root — не ошибка, но небольшая неполнота системы токенов."
+  ]
+}

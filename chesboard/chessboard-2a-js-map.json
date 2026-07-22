@@ -1,0 +1,603 @@
+{
+  "meta": {
+    "source_file": "chessboard-2a.html",
+    "analyzed_block": "<script> ... </script>, строки 719–1808",
+    "generated_for_version": "2a",
+    "total_js_lines": 1090,
+    "stats": {
+      "classes": 11,
+      "total_callable_members": 93,
+      "custom_events": 5,
+      "native_dom_event_types_used": [
+        "click",
+        "keydown",
+        "pointerdown",
+        "pointermove",
+        "pointerup",
+        "pointercancel",
+        "lostpointercapture",
+        "submit",
+        "input",
+        "DOMContentLoaded"
+      ]
+    },
+    "language": "Vanilla ES2022+ классы, без фреймворка и без сборки; один общий <script> в конце body"
+  },
+  "architecture_patterns": {
+    "widget_controller_convention": "11 из 11 классов — классы (не модули/функции). 9 из 11 — «виджет-контроллеры»: конструктор принимает root (строка-селектор ИЛИ готовый DOM-узел), защитный ранний выход `if (!this._root) return;`, если узел не найден, свой AbortController для слушателей, публичный destroy(). Общего базового класса/примеси нет — контракт соблюдается только соглашением по написанию (duck typing), а не наследованием.",
+    "exceptions_to_convention": "ChessRules — не виджет-контроллер вообще (нет конструктора, только статические методы). BoardRenderer и BoardInputController — тоже не самостоятельные виджеты: конструктор принимает НЕ селектор, а готовый объект { dom-ссылки (+ hooks) }, они не ищут root сами и полностью инкапсулированы внутри BoardController.",
+    "config_resolution_pattern": {
+      "описание": "Задумана трёхслойная схема: static DEFAULTS -> опции конструктора (opts) -> data-* атрибуты корневого элемента.",
+      "полностью_реализовано (DEFAULTS+opts+data-*, через отдельный _buildConfig)": [
+        "PlayerCardController",
+        "ClockController"
+      ],
+      "частично_реализовано (DEFAULTS+opts инлайн в конструкторе, без data-*, но результат реально используется)": [
+        "MovesController"
+      ],
+      "объявлено_но_не_используется (static DEFAULTS = {} пустой, this._config либо не создаётся, либо создаётся и нигде не читается дальше)": [
+        "HeaderNavController (DEFAULTS не используется вовсе)",
+        "MoveInputController (DEFAULTS не используется вовсе)",
+        "SettingsModalController (DEFAULTS не используется вовсе)",
+        "BoardController (this._config создаётся из DEFAULTS+opts, но ни разу не читается ни в одном методе класса)"
+      ]
+    },
+    "communication_pattern": {
+      "тип": "Два независимых механизма связи, в зависимости от типа отношений между классами",
+      "родитель-владеет-приватным-под-компонентом (BoardController -> BoardRenderer / BoardInputController)": "Прямые ссылки + инъекция колбэков (\"hooks\"): BoardController передаёт в BoardInputController объект hooks из 8 функций-колбэков (dragCandidate, onActivate, onFocusMove, onEscape, onDragStart, onDragProgress, onDragEnd, onMove); BoardRenderer вызывается напрямую как this._renderer.render(...).",
+      "независимые_виджеты-соседи (Board, MoveInput, Moves, SettingsModal, ChessPage, Clock, PlayerCard)": "Общая шина CustomEvent на `document` — издатель не знает о подписчиках (см. event_bus_map). Это единственный канал связи между виджетами верхнего уровня."
+    },
+    "cleanup_pattern": "У каждого виджет-контроллера — свой `this._ac = new AbortController()`; все addEventListener получают `{ signal: this._ac.signal }`; `destroy()` вызывает `this._ac.abort()`, разом снимая все слушатели этого экземпляра одной операцией, без ручного хранения ссылок на каждый обработчик (кроме BoardInputController, которому дополнительно ещё нужно вручную removeEventListener внутри _cleanupDrag — см. observations).",
+    "rendering_pattern": "Однонаправленный поток: обработчик события мутирует this._state, затем явно вызывает this._render() (или renderer.render(state)), который каждый раз перестраивает DOM из состояния (replaceChildren/createDocumentFragment), а не точечно патчит отдельные узлы — кроме renderDragOverlay(), который специально сделан дешёвым и точечным для частых pointermove."
+  },
+  "classes": {
+    "HeaderNavController": {
+      "purpose": "Управляет схлопыванием/раскрытием навигационного меню на узких экранах",
+      "kind": "widget controller (общесайтовый, переиспользуемый)",
+      "css_widget_link": ".header-nav-container",
+      "static_properties": {
+        "DEFAULTS": "{} — объявлен, но нигде не используется"
+      },
+      "instance_properties": {
+        "_root": "корневой .header-nav-container",
+        "_ac": "AbortController для очистки слушателей",
+        "_toggleEl": "кнопка-гамбургер [data-action='toggle-menu']"
+      },
+      "getters": {},
+      "methods": {
+        "lifecycle": {
+          "constructor(root)": "находит root, ранний выход если не найден, создаёт _ac, кэширует toggleEl, вызывает _bind()",
+          "destroy()": "_ac.abort()"
+        },
+        "private": {
+          "_bind()": "вешает click на toggleEl",
+          "_onToggle()": "переключает data-state collapsed/expanded на root и aria-expanded на кнопке"
+        }
+      },
+      "events": {
+        "dispatches": [],
+        "listens": []
+      }
+    },
+    "PlayerCardController": {
+      "purpose": "Одна карточка игрока (имя/рейтинг/флаг/аватар); инстанцируется по одной на игрока",
+      "kind": "widget controller",
+      "css_widget_link": ".player-card-container",
+      "static_properties": {
+        "DEFAULTS": "{ name:'Player', rating:'—', flagLabel:'', flagSrc:'' } — реально используется"
+      },
+      "instance_properties": {
+        "_root": "корневой .player-card-container",
+        "_ac": "AbortController",
+        "_config": "итог 3-слойного разрешения DEFAULTS→opts→data-player-*",
+        "_nameEl": "[data-ref='player-card-name']",
+        "_ratingEl": "[data-ref='player-card-rating']",
+        "_avatarEl": "[data-ref='player-card-avatar']",
+        "_flagEl": "[data-ref='player-card-flag']"
+      },
+      "getters": {
+        "color": "data-color родителя ('white'/'black')"
+      },
+      "methods": {
+        "public_api": {
+          "setActiveTurn(isActive)": "включает/выключает визуальное состояние 'сейчас ваш ход' (data-state=active-turn)"
+        },
+        "private": {
+          "_buildConfig(opts)": "сливает DEFAULTS, opts и data-player-name/rating/flag-label/flag-src",
+          "_cacheDom()": "кэширует ссылки на дочерние элементы карточки",
+          "_initials(name)": "вычисляет инициалы из имени для аватара",
+          "_render()": "заполняет имя/рейтинг/аватар/флаг из _config"
+        },
+        "lifecycle": {
+          "constructor(root, opts)": "...",
+          "destroy()": "_ac.abort()"
+        }
+      },
+      "events": {
+        "dispatches": [],
+        "listens": []
+      }
+    },
+    "ClockController": {
+      "purpose": "Часы одного игрока: обратный отсчёт, автостоп на нуле, событие истечения",
+      "kind": "widget controller",
+      "css_widget_link": ".clock-container",
+      "static_properties": {
+        "DEFAULTS": "{ minutes: 10 }",
+        "MS_PER_MINUTE": 60000,
+        "LOW_TIME_THRESHOLD_MS": 30000,
+        "TICK_INTERVAL_MS": 250
+      },
+      "instance_properties": {
+        "_root": "корневой .clock-container",
+        "_ac": "AbortController",
+        "_config": "{ minutes } — итог DEFAULTS→opts→data-clock-minutes",
+        "_state": "{ remainingMs, running }",
+        "_intervalId": "id активного setInterval либо null"
+      },
+      "getters": {
+        "color": "data-color родителя"
+      },
+      "methods": {
+        "public_api": {
+          "reset(minutes)": "stop() + возврат remainingMs к стартовому значению",
+          "start()": "запускает setInterval с шагом TICK_INTERVAL_MS, считает по разнице performance.now()",
+          "stop()": "останавливает отсчёт, безопасен при повторном вызове"
+        },
+        "private": {
+          "_buildConfig(opts)": "...",
+          "_render()": "форматирует mm:ss в textContent, выставляет data-state (active/low-time/expired)"
+        },
+        "lifecycle": {
+          "constructor(root, opts)": "...",
+          "destroy()": "stop() + _ac.abort()"
+        }
+      },
+      "events": {
+        "dispatches": [
+          "clock:expired (detail: {color}) — при remainingMs<=0, из тела setInterval"
+        ],
+        "listens": []
+      }
+    },
+    "ChessRules": {
+      "purpose": "Чистая шахматная логика ходов и координатная арифметика — без DOM и без общего изменяемого состояния",
+      "kind": "stateless static utility / rules engine (не инстанцируется, конструктора нет)",
+      "css_widget_link": null,
+      "static_properties": {
+        "FILES": "'abcdefgh'"
+      },
+      "instance_properties": {},
+      "getters": {},
+      "methods": {
+        "static_public": {
+          "createStartPosition()": "стартовая позиция 8x8 (row 0 = 8-я горизонталь)",
+          "squareName(row, col)": "{row,col} -> 'e2'",
+          "squareFromName(name)": "'e2' -> {row,col}",
+          "isPathClear(position, from, to)": "все клетки между from и to пусты",
+          "isPseudoLegal(position, from, to)": "ход соответствует шаблону движения фигуры (без учёта шаха своему королю — по комментарию в коде это сознательно вынесено за рамки, см. §12 спецификации проекта)",
+          "legalTargetsFrom(position, from)": "все псевдо-легальные клетки-цели для фигуры на from"
+        }
+      },
+      "events": {
+        "dispatches": [],
+        "listens": []
+      },
+      "note": "По собственному doc-комментарию в коде — специально написан так, чтобы работать и тестироваться в чистом Node.js без браузера/DOM."
+    },
+    "BoardRenderer": {
+      "purpose": "Строит DOM доски по снимку состояния; не хранит игровое состояние сам. render() — полная перестройка (раз на ход), renderDragOverlay() — дешёвое точечное обновление (на каждый pointermove)",
+      "kind": "internal rendering sub-component (инкапсулирован внутри BoardController, не самостоятельный виджет)",
+      "css_widget_link": ".board-container / .board-square / .board-piece / .board-drag-ghost",
+      "static_properties": {
+        "PIECE_NAMES": "{k,q,r,b,n,p} -> русское название фигуры (для aria-label)",
+        "PIECE_FILES": "{w|b}{k,q,r,b,n,p} -> имя файла SVG фигуры"
+      },
+      "instance_properties": {
+        "_gridEl": "board-grid",
+        "_ranksEl": "board-ranks",
+        "_filesEl": "board-files",
+        "_ghostEl": "board-drag-ghost",
+        "_draggingPieceEl": "ссылка на DOM фигуры, которая сейчас 'приподнята' в drag — единственное состояние, хранимое между вызовами renderDragOverlay"
+      },
+      "getters": {},
+      "methods": {
+        "public_api": {
+          "render(state)": "перестраивает все 64 клетки из position/selectedSquare/focusedSquare; безусловно сбрасывает drag-оверлей как защитный бэкстоп",
+          "renderDragOverlay(overlay)": "рисует/чистит призрак+подсветку клетки+фейд исходной фигуры из снимка overlay, либо снимает все три при falsy — единственный метод во всём коде, который их трогает"
+        },
+        "private": {
+          "_renderCoordinates()": "рендерит подписи 8..1 и a..h один раз",
+          "_clearDragOverState()": "снимает токен drag-over со всех клеток",
+          "_createPieceElement(piece)": "создаёт <img class='board-piece'>",
+          "_pieceLabel(piece, squareName)": "человекочитаемый aria-label клетки с фигурой"
+        },
+        "lifecycle": {
+          "constructor(dom)": "принимает уже готовые DOM-ссылки (не ищет root сам)"
+        }
+      },
+      "events": {
+        "dispatches": [],
+        "listens": []
+      }
+    },
+    "BoardInputController": {
+      "purpose": "Распознаёт клик/клавиатуру/pointer-drag жесты на гриде доски и сообщает о них через `hooks`; не хранит игровое состояние и не красит DOM сам",
+      "kind": "internal input sub-component (инкапсулирован внутри BoardController)",
+      "css_widget_link": ".board-grid / .board-square / .board-piece (только как источник событий, не как то, что этот класс стилизует)",
+      "static_properties": {},
+      "instance_properties": {
+        "_gridEl": "board-grid",
+        "_hooks": "объект из 8 колбэков от владельца (BoardController)",
+        "_ac": "AbortController",
+        "_dragFrom": "имя клетки, откуда начат drag, либо null",
+        "_dragPointerId": "id указателя текущего drag",
+        "_suppressNextClick": "флаг подавления 'призрачного' click сразу после drag",
+        "_boundOnDragMove / _boundOnDragEnd / _boundOnDragCancel": "заранее забинженные ссылки на обработчики — нужны, чтобы потом их можно было снять через removeEventListener по ссылке"
+      },
+      "getters": {
+        "_isDragging": "this._dragFrom !== null — именованный инвариант 'не больше одного drag одновременно'"
+      },
+      "methods": {
+        "private": {
+          "_bind()": "click/keydown/pointerdown на gridEl",
+          "_onClick(event)": "клик по клетке -> hooks.onFocusMove + hooks.onActivate",
+          "_onKeydown(event)": "стрелки двигают фокус, Enter/Space активируют клетку, Escape -> hooks.onEscape",
+          "_onPointerDown(event)": "начало drag: спрашивает hooks.dragCandidate, если можно — setPointerCapture, вызывает hooks.onDragStart, вешает pointermove/up/cancel/lostpointercapture",
+          "_onDragMove(event)": "elementFromPoint под курсором -> hooks.onDragProgress",
+          "_releaseDragCapture()": "releasePointerCapture, если ещё захвачен",
+          "_cleanupDrag()": "общий teardown для всех трёх путей завершения drag (drop/miss/cancel)",
+          "_onDragEnd(event)": "определяет клетку под курсором, чистит drag, вызывает hooks.onDragEnd(), затем hooks.onMove(from,to) если приземлились на клетку",
+          "_onDragCancel()": "то же самое, но без попытки хода"
+        },
+        "lifecycle": {
+          "constructor(dom, hooks)": "...",
+          "destroy()": "_ac.abort()"
+        }
+      },
+      "events": {
+        "dispatches": [],
+        "listens": []
+      },
+      "note": "Помимо pointerup/pointercancel слушает ещё и lostpointercapture — третий путь завершения drag на случай, если браузер сам отзовёт capture (смена фокуса окна, системный жест) и ни один из первых двух так и не сработает."
+    },
+    "BoardController": {
+      "purpose": "Оркестратор одной доски: владеет игровым состоянием и публичным API (applyMove, reset), СОСТАВЛЯЕТ ChessRules/BoardRenderer/BoardInputController, а не реализует правила/DOM/ввод сам",
+      "kind": "widget controller / orchestrator среднего уровня",
+      "css_widget_link": ".board-container (косвенно — реальную покраску делает BoardRenderer)",
+      "static_properties": {
+        "DEFAULTS": "{} — спредится в this._config, но this._config затем НИ РАЗУ не читается ни в одном методе класса (см. observations)"
+      },
+      "instance_properties": {
+        "_root": "board-container",
+        "_ac": "AbortController",
+        "_config": "см. static_properties — фактически неиспользуемое",
+        "_state": "{ position (8x8), turn ('w'|'b'), selectedSquare, focusedSquare }",
+        "_dragOverlay": "снимок текущего drag-оверлея либо null",
+        "_gridEl/_ranksEl/_filesEl/_ghostEl": "DOM-ссылки, переданные дальше в BoardRenderer/BoardInputController",
+        "_renderer": "собственный экземпляр BoardRenderer",
+        "_input": "собственный экземпляр BoardInputController"
+      },
+      "getters": {},
+      "methods": {
+        "public_api": {
+          "applyMove(notation)": "парсит 'e2-e4', единая точка входа, общая с drag-and-drop через _tryMove",
+          "reset()": "восстанавливает стартовую позицию, ход белых (цвет всегда 'w' — см. observations)"
+        },
+        "private": {
+          "_cacheDom()": "...",
+          "_dragCandidateAt(squareName)": "можно ли поднять фигуру на этой клетке (её ли сейчас цвет хода)",
+          "_startDragOverlay / _updateDragOverlay / _clearDragOverlay": "тройка жизненного цикла drag-снимка, каждая просто форвардит в _renderer.renderDragOverlay",
+          "_tryMove(from, to)": "проверяет пустую клетку/чужой ход/псевдо-легальность, мутирует position, переключает turn, превращает пешку в ферзя на последней горизонтали, рендерит, шлёт board:move-made",
+          "_emitIllegal(from, to, reason)": "шлёт board:illegal-move",
+          "_moveFocus(squareName)": "...",
+          "_clearSelection()": "...",
+          "_handleSquareActivate(squareName)": "логика клика по клетке: выбрать / отменить выбор / попытаться сходить / переключить выбор на другую свою фигуру",
+          "_render()": "делегирует в this._renderer.render(this._state)"
+        },
+        "lifecycle": {
+          "constructor(root, opts)": "создаёт state, кэширует DOM, создаёт _renderer и _input (передавая ему 8 hooks-колбэков), рендерит стартовое состояние",
+          "destroy()": "this._input.destroy() + _ac.abort() (примечание: _renderer.destroy() не существует и не вызывается — у BoardRenderer нет destroy(), т.к. он не вешает собственных слушателей)"
+        }
+      },
+      "events": {
+        "dispatches": [
+          "board:move-made (detail: {from,to,piece,color,notation,capturedPiece}) — из _tryMove при успешном ходе",
+          "board:illegal-move (detail: {from,to,reason}) — из _emitIllegal, reason одно из: format|empty-square|wrong-turn|illegal-pattern"
+        ],
+        "listens": []
+      }
+    },
+    "MoveInputController": {
+      "purpose": "Текстовое поле алгебраической нотации ('e2-e4') и кнопка отправки; делится входной точкой BoardController.applyMove() через цепочку moveinput:submitted -> оркестратор -> board.applyMove()",
+      "kind": "widget controller",
+      "css_widget_link": ".move-input-container / .move-input-field",
+      "static_properties": {
+        "DEFAULTS": "{} — не используется",
+        "INVALID_FLASH_MS": "250 — используется в _flagInvalid"
+      },
+      "instance_properties": {
+        "_root": "move-input-container (form)",
+        "_ac": "AbortController",
+        "_fieldEl": "input[data-ref='move-input-field']"
+      },
+      "getters": {},
+      "methods": {
+        "private": {
+          "_onSubmit(event)": "preventDefault, читает значение поля, шлёт moveinput:submitted",
+          "_flagInvalid()": "выставляет data-state=invalid на 250мс (INVALID_FLASH_MS), затем снимает",
+          "_clear()": "очищает поле и его data-state",
+          "_bind()": "submit на форме + document-слушатели board:illegal-move/board:move-made"
+        },
+        "lifecycle": {
+          "constructor(root)": "...",
+          "destroy()": "_ac.abort()"
+        }
+      },
+      "events": {
+        "dispatches": [
+          "moveinput:submitted (detail: {notation})"
+        ],
+        "listens": [
+          "board:illegal-move -> _flagInvalid()",
+          "board:move-made -> _clear()"
+        ]
+      }
+    },
+    "MovesController": {
+      "purpose": "Пагинированная история ходов; строит список ИСКЛЮЧИТЕЛЬНО из событий board:move-made, никогда не читает состояние BoardController напрямую",
+      "kind": "widget controller",
+      "css_widget_link": ".moves-container / .moves-list / .moves-pagination",
+      "static_properties": {
+        "DEFAULTS": "{ pageSize: 8 } — реально используется"
+      },
+      "instance_properties": {
+        "_root": "moves-container",
+        "_ac": "AbortController",
+        "_config": "{ pageSize } из DEFAULTS+opts",
+        "_state": "{ moves: [], page }",
+        "_listEl/_pageLabelEl/_prevBtn/_nextBtn": "DOM-ссылки"
+      },
+      "getters": {},
+      "methods": {
+        "public_api": {
+          "reset()": "очищает историю до пустой первой страницы"
+        },
+        "private": {
+          "_cacheDom()": "...",
+          "_bind()": "слушает document 'board:move-made' + клики prev/next",
+          "_onMoveMade(event)": "добавляет ход в _state.moves, переключает на последнюю страницу",
+          "_totalPages()": "по числу пар ходов и pageSize",
+          "_changePage(delta)": "...",
+          "_pairMoves()": "группирует плоский список ходов в пары {number, white, black}",
+          "_cell(text)": "создаёт <td>",
+          "_render()": "строит таблицу пар либо .moves-empty, обновляет подпись страницы и disabled кнопок"
+        },
+        "lifecycle": {
+          "constructor(root, opts)": "...",
+          "destroy()": "_ac.abort()"
+        }
+      },
+      "events": {
+        "dispatches": [],
+        "listens": [
+          "board:move-made -> _onMoveMade(event)"
+        ]
+      }
+    },
+    "SettingsModalController": {
+      "purpose": "Диалог 'новая партия' (цвет + контроль времени) — полноценная focus-trap модалка: Escape/клик по фону закрывают её, фокус возвращается к тому, что её открыло",
+      "kind": "widget controller",
+      "css_widget_link": ".settings-modal-container / .settings-modal-dialog",
+      "static_properties": {
+        "DEFAULTS": "{} — не используется"
+      },
+      "instance_properties": {
+        "_root": "settings-modal-container",
+        "_ac": "AbortController",
+        "_lastFocused": "элемент, который был в фокусе до открытия — для возврата фокуса при закрытии",
+        "_dialogEl/_cancelBtn/_confirmBtn/_rangeEl/_rangeValueEl": "DOM-ссылки",
+        "_colorInputs": "массив трёх radio-инпутов (white/black/random)"
+      },
+      "getters": {},
+      "methods": {
+        "public_api": {
+          "open()": "запоминает activeElement, снимает hidden, фокусирует confirmBtn",
+          "close()": "ставит hidden, возвращает фокус на _lastFocused"
+        },
+        "private": {
+          "_cacheDom()": "...",
+          "_bind()": "клики cancel/confirm, input на range, клик по фону (root===target), keydown",
+          "_syncRangeLabel()": "обновляет числовую подпись минут рядом с ползунком",
+          "_onKeydown(event)": "Escape -> close(); Tab -> ручной focus trap между первым/последним focusable внутри диалога",
+          "_onConfirm()": "читает выбранный цвет и время, шлёт settings:game-started, закрывает модалку"
+        },
+        "lifecycle": {
+          "constructor(root)": "...",
+          "destroy()": "_ac.abort()"
+        }
+      },
+      "events": {
+        "dispatches": [
+          "settings:game-started (detail: {timeControl, color})"
+        ],
+        "listens": []
+      }
+    },
+    "ChessPageController": {
+      "purpose": "Оркестратор уровня страницы: инстанцирует все виджеты и связывает их через document-level CustomEvent (комментарий в коде называет это «orchestration-2 pattern»), никогда не лезет во внутренности дочернего виджета — только вызывает его публичные методы",
+      "kind": "top-level page orchestrator (корень композиции, единственный созданный напрямую в bootstrap-коде)",
+      "css_widget_link": ".chess-page",
+      "static_properties": {},
+      "instance_properties": {
+        "_root": ".chess-page",
+        "_ac": "AbortController",
+        "_headerNav": "1 экземпляр HeaderNavController",
+        "_playerCards": "массив из 2 экземпляров PlayerCardController",
+        "_clocks": "массив из 2 экземпляров ClockController",
+        "_board": "1 экземпляр BoardController",
+        "_moveInput": "1 экземпляр MoveInputController",
+        "_moves": "1 экземпляр MovesController",
+        "_settingsModal": "1 экземпляр SettingsModalController",
+        "_newGameTrigger": "кнопка [data-ref='new-game-trigger'] в сайдбаре"
+      },
+      "getters": {},
+      "methods": {
+        "private": {
+          "_bind()": "document-слушатели на все 4 входящих кастомных события + клик по _newGameTrigger",
+          "_onMoveMade(event)": "вычисляет следующий цвет хода, вызывает _syncActiveTurn",
+          "_syncActiveTurn(turnColor)": "включает active-turn на нужной player-card, стартует часы нужного цвета и останавливает другие",
+          "_onClockExpired()": "останавливает ВСЕ часы (не объявляет победителя явно — см. observations)",
+          "_onGameStarted(event)": "сбрасывает часы (на event.detail.timeControl), историю ходов, доску, включает белых — event.detail.color при этом не используется (см. observations)"
+        },
+        "lifecycle": {
+          "constructor(root)": "создаёт ВСЕ дочерние контроллеры, вызывает _bind(), сразу вызывает _syncActiveTurn('w')",
+          "destroy()": "вызывает destroy() каждого дочернего контроллера, затем _ac.abort()"
+        }
+      },
+      "events": {
+        "dispatches": [],
+        "listens": [
+          "board:move-made -> _onMoveMade",
+          "moveinput:submitted -> напрямую this._board.applyMove(event.detail.notation)",
+          "clock:expired -> _onClockExpired",
+          "settings:game-started -> _onGameStarted"
+        ]
+      },
+      "bootstrap": "document.addEventListener('DOMContentLoaded', () => { window.chessPage = new ChessPageController('.chess-page'); })"
+    }
+  },
+  "instantiation_hierarchy": {
+    "window.chessPage : ChessPageController (создан на DOMContentLoaded, единственная точка входа)": {
+      "HeaderNavController": "1 инстанс — .header-nav-container",
+      "PlayerCardController": "2 инстанса — по одному на каждый .player-card-container (белые/чёрные)",
+      "ClockController": "2 инстанса — по одному на каждый .clock-container",
+      "BoardController": {
+        "_self": "1 инстанс — .board-container",
+        "BoardRenderer": "1 инстанс, создан ВНУТРИ BoardController, наружу не доступен",
+        "BoardInputController": "1 инстанс, создан ВНУТРИ BoardController, получает hooks-колбэки, наружу не доступен"
+      },
+      "MoveInputController": "1 инстанс — .move-input-container",
+      "MovesController": "1 инстанс — .moves-container",
+      "SettingsModalController": "1 инстанс — .settings-modal-container"
+    },
+    "ChessRules": "не инстанцируется никогда — статический класс, вызывается напрямую как ChessRules.xxx(...) изнутри BoardRenderer, BoardInputController и BoardController"
+  },
+  "event_bus_map": {
+    "описание": "Все 5 событий — document-level CustomEvent; издатель не хранит и не знает список подписчиков (классическая шина publish/subscribe)",
+    "clock:expired": {
+      "dispatched_by": "ClockController.start() (изнутри колбэка setInterval, когда remainingMs<=0)",
+      "detail_shape": {
+        "color": "'w' | 'b'"
+      },
+      "listened_by": [
+        "ChessPageController._onClockExpired — останавливает все часы"
+      ]
+    },
+    "board:move-made": {
+      "dispatched_by": "BoardController._tryMove() — при успешном ходе",
+      "detail_shape": {
+        "from": "string",
+        "to": "string",
+        "piece": "'k'|'q'|'r'|'b'|'n'|'p'",
+        "color": "'w'|'b'",
+        "notation": "'e2-e4'",
+        "capturedPiece": "тип съеденной фигуры либо null"
+      },
+      "listened_by": [
+        "MoveInputController._clear() — очищает поле ввода",
+        "MovesController._onMoveMade() — добавляет ход в историю и переключает страницу",
+        "ChessPageController._onMoveMade() — переключает активный цвет карточек/часов"
+      ]
+    },
+    "board:illegal-move": {
+      "dispatched_by": "BoardController._emitIllegal()",
+      "detail_shape": {
+        "from": "string|null",
+        "to": "string|null",
+        "reason": "'format'|'empty-square'|'wrong-turn'|'illegal-pattern'"
+      },
+      "listened_by": [
+        "MoveInputController._flagInvalid() — подсвечивает поле ввода как невалидное"
+      ]
+    },
+    "moveinput:submitted": {
+      "dispatched_by": "MoveInputController._onSubmit()",
+      "detail_shape": {
+        "notation": "string, например 'e2-e4'"
+      },
+      "listened_by": [
+        "ChessPageController -> напрямую this._board.applyMove(event.detail.notation)"
+      ]
+    },
+    "settings:game-started": {
+      "dispatched_by": "SettingsModalController._onConfirm()",
+      "detail_shape": {
+        "timeControl": "число минут",
+        "color": "'white'|'black'|'random'"
+      },
+      "listened_by": [
+        "ChessPageController._onGameStarted() — сбрасывает часы/историю/доску (см. observations: поле color из этого события фактически не используется)"
+      ]
+    }
+  },
+  "class_groups_by_purpose": [
+    {
+      "group": "Навигация / общесайтовые",
+      "classes": [
+        "HeaderNavController"
+      ],
+      "role": "Переиспользуется на других страницах сайта, не специфична для шахмат"
+    },
+    {
+      "group": "Участники партии (карточки игроков и часы)",
+      "classes": [
+        "PlayerCardController",
+        "ClockController"
+      ],
+      "role": "Отображают статус игрока и течение времени, реагируют на переключение хода"
+    },
+    {
+      "group": "Ядро доски (правила, отрисовка, ввод, оркестрация)",
+      "classes": [
+        "ChessRules",
+        "BoardRenderer",
+        "BoardInputController",
+        "BoardController"
+      ],
+      "role": "Единственная группа с внутренней многослойной архитектурой: чистая логика / чистый рендер / чистый ввод, собранные воедино оркестратором BoardController"
+    },
+    {
+      "group": "Ввод и история ходов",
+      "classes": [
+        "MoveInputController",
+        "MovesController"
+      ],
+      "role": "Текстовый альтернативный способ хода и журнал партии; оба развязаны от BoardController через события, а не прямые ссылки"
+    },
+    {
+      "group": "Диалоги",
+      "classes": [
+        "SettingsModalController"
+      ],
+      "role": "Единственный модальный/оверлейный UI в приложении"
+    },
+    {
+      "group": "Оркестрация верхнего уровня",
+      "classes": [
+        "ChessPageController"
+      ],
+      "role": "Единственный класс, который трогает document.addEventListener/dispatchEvent для СВЯЗЫВАНИЯ виджетов между собой; единственный, кого инстанцирует bootstrap-код"
+    }
+  ],
+  "observations": [
+    "Событие settings:game-started несёт поле color (выбор 'белые/чёрные/случайно' из модалки), но ChessPageController._onGameStarted его не читает: BoardController.reset() без аргументов и последующий _syncActiveTurn('w') всегда стартуют партию за белых вне зависимости от выбора в диалоге. На уровне текущего кода выбор цвета в модалке визуально работает (радиокнопки переключаются), но ни на что не влияет.",
+    "BoardController._config создаётся (спред пустого static DEFAULTS + opts), но ни разу не читается ни в одном методе класса — по факту мёртвое свойство в текущем виде.",
+    "Схема static DEFAULTS = {} присутствует ещё в трёх классах (HeaderNavController, MoveInputController, SettingsModalController), и там она тоже нигде не используется, даже не сливается в this._config — похоже на скопированный шаблон-заготовку 'на будущее', а не на реально работающий механизм в 4 из 4 случаев.",
+    "Полностью работающая трёхслойная конфигурация (DEFAULTS -> opts -> data-*-атрибуты через отдельный метод _buildConfig) реализована только в 2 классах из 11: PlayerCardController и ClockController.",
+    "BoardController.destroy() вызывает this._input.destroy(), но не вызывает ничего для this._renderer — не баг: у BoardRenderer действительно нет собственных addEventListener и, соответственно, нет метода destroy(), но асимметрия (у одного из двух приватных под-компонентов есть destroy, у другого нет) стоит иметь в виду при будущих правках.",
+    "ChessRules — единственный класс без DOM-зависимостей: по собственному doc-комментарию в коде рассчитан на unit-тестирование в чистом Node.js.",
+    "Связь между BoardController и его приватными BoardRenderer/BoardInputController идёt через прямые ссылки и инъекцию колбэков (hooks), а связь между независимыми виджетами верхнего уровня — исключительно через document-level CustomEvent; выбор механизма связи в коде последовательно зависит от типа отношения (владение vs соседство), а не смешан произвольно.",
+    "BoardInputController — единственный класс, где помимо AbortController есть ЕЩЁ и ручной removeEventListener (внутри _cleanupDrag) для четырёх обработчиков drag; сделано намеренно, чтобы завершать один конкретный drag-жест, не дожидаясь destroy() всего контроллера."
+  ]
+}

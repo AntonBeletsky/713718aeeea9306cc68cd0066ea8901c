@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="Author" content="Anton Beletsky">
+<title>Chess</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+/* ─── RESET ──────────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  min-height: 100%;
+  font-family: var(--font-body);
+  background: var(--page-bg);
+  color: var(--page-text);
+}
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+input { font: inherit; color: inherit; }
+img { max-width: 100%; display: block; }
+ul { margin: 0; padding: 0; list-style: none; }
+a { color: inherit; }
+
+/* ─── DESIGN TOKENS ──────────────────────────────────────────────────── */
+/* Kept global on :root by design: this is one page with one shared visual
+   language, not a set of independently reusable drop-in widgets, so the
+   tokens are not namespaced per component (see migration plan §0.5). */
+
+:root {
+  --page-bg: #032D44;
+  --page-bg-raised: #0a3d58;
+  --page-text: #F1EBE6;
+  --page-text-dim: #b9c7ce;
+  --gold: #D9B98A;
+  --gold-strong: #E7D3B3;
+  --wood-dark: #441A03;
+  --wood-mid: #5c4a35;
+  --wood-mid-alt: #4a3b29;
+  --square-light: #b5915f;
+  --square-dark: #441a03;
+  --board-frame-outer: #1a120c;
+  --board-frame-inner: #c9a37c;
+  --danger: #E7594A;
+  --focus-ring: #7FC7FF;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* Type scale. Two raw sizes in the pre-scale CSS didn't land on a step
+     (15px nav link, 17px mobile brand) and were folded into the nearest
+     one (--fs-base, --fs-md) rather than kept as their own steps — see
+     ui-foundations plan §Phase B. 22px hamburger-icon glyph is deliberately
+     NOT here: it's an icon size, not running text, so it stays a literal
+     value on .menu-toggle. */
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-base: 14px;
+  --fs-md: 16px;
+  --fs-lg: 18px;
+  --fs-xl: 20px;
+  --fs-2xl: 28px;
+
+  /* Elevation scale: sm for surfaces that sit flush on the page (cards,
+     lists), lg for surfaces that float above other content (modal, board).
+     lg is the same value the old single --shadow-card token held — nothing
+     that already used it changes size, only name. */
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.25);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.35);
+
+  /* z-index scale: the only two values that existed before this pass keep
+     their exact numbers (drag-overlay 50, modal 100) so nothing visually
+     moves — --z-dropdown is the new one, closing the gap that let the
+     board paint over the open mobile menu (see ui-foundations plan §1.1). */
+  --z-dropdown: 10;
+  --z-drag-overlay: 50;
+  --z-modal: 100;
+}
+
+/* ─── ACCESSIBILITY ──────────────────────────────────────────────────── */
+
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── SHARED / UTILITY ───────────────────────────────────────────────── */
+/* Cross-widget style, not owned by any one container's scope — the same
+   legal category as .visually-hidden above. Used by the move-entry submit
+   button AND the sidebar "new game" trigger; before the rescoping pass both
+   borrowed .move-input-submit, which is exactly the kind of same-selector-
+   two-containers case the cardinal rule (below) makes impossible to keep. */
+
+.surface {
+  background: var(--page-bg-raised);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Modifier, not a new BEM element — flat compound name, same rule as
+   everything else in this file (containerization-11.md §3.2 Pattern C). */
+.surface-elevated {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+}
+
+.btn-primary { background: var(--gold); color: var(--wood-dark); font-weight: 700; }
+.btn-primary:hover { background: var(--gold-strong); }
+
+.btn-secondary { background: rgba(255,255,255,0.08); color: var(--page-text); }
+
+/* ─── HEADER NAV WIDGET ──────────────────────────────────────────────── */
+/* Cardinal rule (containerization-11.md §3.1): every selector below starts
+   with .header-nav-container as a real descendant combinator, not just a
+   shared name prefix — a child class can no longer style an element that
+   accidentally landed outside this container. Container class itself is
+   unchanged; it's the JS root-lookup anchor. */
+
+.header-nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  background: #1c1c1c;
+  border-bottom: 1px solid rgba(217,185,138,0.25);
+  position: relative;
+}
+
+.header-nav-container .brand {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  color: var(--gold-strong);
+  letter-spacing: 0.02em;
+}
+
+.header-nav-container .links {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.header-nav-container .link {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: var(--fs-base);
+  color: #e7d3b3;
+  text-decoration: none;
+}
+
+.header-nav-container .link:hover,
+.header-nav-container .link[data-state="active"] {
+  background: rgba(217,185,138,0.14);
+}
+
+.header-nav-container .menu-toggle {
+  display: none;
+  padding: var(--space-2);
+  color: var(--gold-strong);
+  font-size: 22px; /* icon glyph size, not running text — not part of --fs-* */
+  line-height: 1;
+}
+
+@media (max-width: 767px) {
+  .header-nav-container .links {
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    z-index: var(--z-dropdown);
+    flex-direction: column;
+    background: #1c1c1c;
+    padding: var(--space-2);
+    border-bottom: 1px solid rgba(217,185,138,0.25);
+  }
+  .header-nav-container[data-state="collapsed"] .links { display: none; }
+  .header-nav-container .menu-toggle { display: block; }
+}
+
+/* ─── PLAYER CARD WIDGET ─────────────────────────────────────────────── */
+
+.player-card-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  /* Fluid floor instead of a hard one: never demands more than it can get.
+     Same technique as .board-container/.settings-modal-container .dialog
+     already use via width: min(...) — clamp() is the min-width equivalent.
+     260px stays the *preferred* size on anything roomy enough to give it. */
+  min-width: clamp(140px, 55vw, 260px);
+}
+
+.player-card-container .avatar {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-lg);
+  color: var(--page-bg);
+  background: var(--gold);
+  flex-shrink: 0;
+}
+
+.player-card-container .body { min-width: 0; flex: 1; }
+
+.player-card-container .name {
+  font-weight: 600;
+  font-size: var(--fs-md);
+  color: var(--page-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-card-container .meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--page-text-dim);
+}
+
+.player-card-container .flag {
+  width: 20px; height: 14px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.15);
+}
+
+.player-card-container[data-state="active-turn"] {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ─── CLOCK WIDGET ───────────────────────────────────────────────────── */
+/* No children — nothing to rescope, the container carries the text itself. */
+
+.clock-container {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-2xl);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: #2a2018;
+  color: #f4ecd8;
+  text-align: center;
+  /* Same fluid-floor pattern as .player-card-container above — see that
+     comment. The two together are exactly what forced the "bottom" player
+     row (data-side="bottom", flex-direction: row-reverse) to overflow off
+     the left edge on very narrow viewports: 260px + 120px + gap never fit
+     below ~400px, and nothing here ever relaxed either number. */
+  min-width: clamp(80px, 24vw, 120px);
+}
+
+.clock-container[data-state="active"] {
+  background: var(--gold);
+  color: var(--wood-dark);
+}
+
+.clock-container[data-state="low-time"] {
+  color: var(--danger);
+}
+
+.clock-container[data-state="expired"] {
+  color: var(--danger);
+  text-decoration: line-through;
+}
+
+/* ─── BOARD WIDGET ───────────────────────────────────────────────────── */
+
+.board-container {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  grid-template-rows: 1fr 24px;
+  gap: var(--space-1);
+  width: min(90vw, 560px);
+  aspect-ratio: 1 / 1;
+}
+
+.board-container .ranks {
+  grid-column: 1; grid-row: 1;
+  display: grid;
+  grid-template-rows: repeat(8, 1fr);
+}
+
+.board-container .files {
+  grid-column: 2; grid-row: 2;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.board-container .ranks span, .board-container .files span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-xs);
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.board-container .grid {
+  grid-column: 2; grid-row: 1;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  padding: var(--space-3);
+  background: var(--board-frame-outer);
+  box-shadow: inset 0 0 0 6px var(--board-frame-inner), var(--shadow-lg);
+  position: relative;
+}
+
+.board-container .square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.board-container .square[data-state~="light"] { background: var(--square-light); }
+.board-container .square[data-state~="dark"] { background: var(--square-dark); }
+
+.board-container .square[data-state~="selected"]::after {
+  content: "";
+  position: absolute; inset: 0;
+  box-shadow: inset 0 0 0 3px var(--gold-strong);
+}
+
+.board-container .square[data-state~="legal-target"]::after {
+  content: "";
+  position: absolute;
+  width: 28%; height: 28%;
+  border-radius: 50%;
+  background: rgba(217,185,138,0.55);
+}
+
+.board-container .square[data-state~="drag-over"] {
+  background: rgba(217,185,138,0.45);
+}
+
+.board-container .piece {
+  width: min(7.5vw, 42px);
+  height: min(7.5vw, 42px);
+  cursor: grab;
+  touch-action: none;
+  transition: transform 120ms ease;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.45));
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.board-container .piece[data-state~="dragging"] {
+  opacity: 0.35;
+}
+
+.board-container .drag-ghost {
+  position: fixed;
+  top: 0; left: 0;
+  width: min(7.5vw, 42px);
+  height: min(7.5vw, 42px);
+  pointer-events: none;
+  z-index: var(--z-drag-overlay);
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+/* Without this, the img{display:block} reset above always wins over the
+   browser's native [hidden] rule (author origin beats user-agent origin
+   regardless of specificity), so toggling a class on this element would
+   have no visual effect at all. Same pattern already used for
+   .settings-modal-container[hidden] below. */
+.board-container .drag-ghost[hidden] {
+  display: none;
+}
+
+/* ─── MOVE INPUT WIDGET ──────────────────────────────────────────────── */
+/* .hint lives inside .move-input-container in the markup now (moved during
+   the rescoping pass) specifically so it can be scoped here instead of
+   borrowing the page-layout container's scope for an element that is
+   conceptually part of the form. Submit button now uses the shared
+   .btn + .btn-primary primitive above — see the SHARED / UTILITY note. */
+
+.move-input-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.move-input-container .field {
+  flex: 1;
+  min-width: 0; /* inputs have their own UA-default intrinsic width; without
+                   this a flex item never shrinks past it, same trap as
+                   .player-card-container/.clock-container above */
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(217,185,138,0.4);
+  background: var(--page-bg-raised);
+  color: var(--page-text);
+  font-family: var(--font-mono);
+}
+
+.move-input-container .field[data-state="invalid"] {
+  border-color: var(--danger);
+  animation: move-input-shake 220ms ease;
+}
+
+@keyframes move-input-shake {
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.move-input-container .hint {
+  font-size: var(--fs-xs);
+  color: var(--page-text-dim);
+  margin-top: var(--space-1);
+  flex-basis: 100%;
+}
+
+/* ─── MOVES HISTORY WIDGET ───────────────────────────────────────────── */
+
+.moves-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 320px;
+  overflow: hidden;
+}
+
+.moves-container .header {
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-md);
+  color: var(--gold-strong);
+  border-bottom: 1px solid rgba(217,185,138,0.2);
+}
+
+.moves-container .list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.moves-container .list table { width: 100%; border-collapse: collapse; }
+
+.moves-container .list tr { background: var(--wood-mid); color: var(--page-text); }
+.moves-container .list tr:nth-child(even) { background: var(--wood-mid-alt); }
+
+.moves-container .list td {
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-base);
+}
+
+.moves-container .list td:first-child { width: 32px; color: var(--page-text-dim); }
+
+.moves-container .empty {
+  padding: var(--space-4);
+  text-align: center;
+  color: var(--page-text-dim);
+  font-size: var(--fs-base);
+}
+
+.moves-container .pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid rgba(217,185,138,0.2);
+}
+
+.moves-container .pagination button {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: rgba(217,185,138,0.14);
+  color: var(--gold-strong);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.moves-container .pagination button:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.moves-container .page { font-size: var(--fs-sm); color: var(--page-text-dim); }
+
+/* ─── SETTINGS MODAL WIDGET ──────────────────────────────────────────── */
+
+.settings-modal-container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(3,45,68,0.72);
+  z-index: var(--z-modal);
+  padding: var(--space-4);
+}
+
+.settings-modal-container[hidden] { display: none; }
+
+.settings-modal-container .dialog {
+  width: min(92vw, 420px);
+  padding: var(--space-5);
+}
+
+.settings-modal-container .title {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  color: var(--gold-strong);
+  margin: 0 0 var(--space-4);
+}
+
+.settings-modal-container .field { margin-bottom: var(--space-4); }
+
+.settings-modal-container .label {
+  display: block;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--page-text-dim);
+  margin-bottom: var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.settings-modal-container .radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.settings-modal-container .radio-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(217,185,138,0.4);
+  cursor: pointer;
+  font-size: var(--fs-base);
+}
+
+.settings-modal-container .radio-option:has(input:checked) {
+  background: var(--gold);
+  color: var(--wood-dark);
+  border-color: var(--gold);
+}
+
+.settings-modal-container .radio-option input { accent-color: var(--gold); }
+
+.settings-modal-container .range { width: 100%; accent-color: var(--gold); }
+
+.settings-modal-container .actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+/* Buttons in here carry .btn + .btn-secondary/.btn-primary directly in the
+   markup now (Phase E) — no widget-scoped button styling left to declare. */
+
+/* ─── PAGE ORCHESTRATOR LAYOUT ───────────────────────────────────────── */
+
+.chess-page { min-height: 100vh; display: flex; flex-direction: column; }
+
+.chess-page .board-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--space-6);
+  padding: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.chess-page .side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 260px;
+}
+
+.chess-page .match {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.chess-page .player-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 560px;
+}
+
+.chess-page .player-row[data-side="top"] { flex-direction: row; }
+.chess-page .player-row[data-side="bottom"] { flex-direction: row-reverse; }
+
+.chess-page .player-row .player-card-container { flex: 1; }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────── */
+/* Breakpoints: 767px (tablet threshold), 1199px (desktop threshold) — the
+   only two numbers used anywhere in this file's @media conditions. Custom
+   properties aren't reliably usable inside @media conditions across
+   browsers yet, so this comment is the single source of truth instead;
+   keep every @media below in sync with it by hand. */
+
+@media (max-width: 1199px) {
+  .chess-page .board-row { justify-content: center; }
+}
+
+@media (max-width: 767px) {
+  .chess-page .board-row { padding: var(--space-3); gap: var(--space-4); }
+  .chess-page .side { width: 100%; max-width: 560px; }
+  .header-nav-container .brand { font-size: var(--fs-md); }
+}
+
+</style>
+</head>
+<body>
+
+<div class="chess-page" aria-label="Шахматная партия">
+
+  <!-- Переиспользуется на других страницах сайта; см. HeaderNavController -->
+  <header class="header-nav-container" data-ref="header-nav-container" data-state="collapsed">
+    <span class="brand">Chess</span>
+    <button type="button" class="menu-toggle" data-action="toggle-menu" aria-expanded="false" aria-controls="header-nav-links">
+      ☰
+      <span class="visually-hidden">Меню</span>
+    </button>
+    <nav class="links" id="header-nav-links" data-ref="header-nav-links" aria-label="Основная навигация">
+      <a class="link" href="gamelist.html" data-ref="header-nav-link">Список партий</a>
+      <a class="link" href="playerlist.html" data-ref="header-nav-link">Игроки</a>
+      <a class="link" href="creategame.html" data-ref="header-nav-link">Новая партия</a>
+      <a class="link" href="profile.html" data-ref="header-nav-link">Профиль</a>
+    </nav>
+  </header>
+
+  <div class="board-row">
+
+    <aside class="side" aria-label="Настройки партии">
+      <button type="button" class="btn btn-primary" data-ref="new-game-trigger" data-action="open-settings">Новая партия</button>
+    </aside>
+
+    <div class="match">
+
+      <div class="player-row" data-side="top">
+        <div class="player-card-container surface" data-ref="player-card-container" data-color="black"
+             data-player-name="John Doe" data-player-rating="1840" data-player-flag-label="Украина" data-player-flag-src="ua.svg">
+          <div class="avatar" data-ref="player-card-avatar" aria-hidden="true"></div>
+          <div class="body">
+            <div class="name" data-ref="player-card-name"></div>
+            <div class="meta">
+              <img class="flag" data-ref="player-card-flag">
+              <span data-ref="player-card-rating"></span>
+            </div>
+          </div>
+        </div>
+        <div class="clock-container" data-ref="clock-container" data-color="black" data-clock-minutes="10" role="timer" aria-label="Время чёрных">10:00</div>
+      </div>
+
+      <section class="board-container" data-ref="board-container" aria-label="Шахматная доска">
+        <div class="ranks" data-ref="board-ranks" aria-hidden="true"></div>
+        <div class="files" data-ref="board-files" aria-hidden="true"></div>
+        <div class="grid" data-ref="board-grid" role="grid" aria-label="Позиция на доске"></div>
+        <img class="drag-ghost" data-ref="board-drag-ghost" hidden aria-hidden="true" alt="">
+      </section>
+
+      <div class="player-row" data-side="bottom">
+        <div class="player-card-container surface" data-ref="player-card-container" data-color="white"
+             data-player-name="Jane Flex" data-player-rating="2010" data-player-flag-label="Евросоюз" data-player-flag-src="eu.svg">
+          <div class="avatar" data-ref="player-card-avatar" aria-hidden="true"></div>
+          <div class="body">
+            <div class="name" data-ref="player-card-name"></div>
+            <div class="meta">
+              <img class="flag" data-ref="player-card-flag">
+              <span data-ref="player-card-rating"></span>
+            </div>
+          </div>
+        </div>
+        <div class="clock-container" data-ref="clock-container" data-color="white" data-clock-minutes="10" data-state="active" role="timer" aria-label="Время белых">10:00</div>
+      </div>
+
+      <form class="move-input-container" data-ref="move-input-container" aria-label="Ввести ход">
+        <label class="visually-hidden" for="move-input-field">Ход в формате e2-e4</label>
+        <input class="field" id="move-input-field" data-ref="move-input-field" type="text" placeholder="e2-e4" autocomplete="off">
+        <button class="btn btn-primary" data-ref="move-input-submit" type="submit">Ходить</button>
+        <p class="hint">Формат: клетка-клетка, например e2-e4</p>
+      </form>
+
+    </div>
+
+    <div class="side">
+      <div class="moves-container surface" data-ref="moves-container" aria-label="История ходов">
+        <div class="header">Записи партии</div>
+        <div class="list" data-ref="moves-list" role="log" aria-live="polite" aria-relevant="additions"></div>
+        <div class="pagination" data-ref="moves-pagination">
+          <button type="button" data-action="prev-page" data-ref="moves-prev">Назад</button>
+          <span class="page" data-ref="moves-page-label">Стр. 1</span>
+          <button type="button" data-action="next-page" data-ref="moves-next">Далее</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="settings-modal-container" data-ref="settings-modal-container" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title" hidden>
+    <div class="dialog surface surface-elevated" data-ref="settings-modal-dialog">
+      <h2 class="title" id="settings-modal-title">Новая партия</h2>
+
+      <div class="field">
+        <span class="label" id="settings-color-label">Цвет</span>
+        <div class="radio-group" role="radiogroup" aria-labelledby="settings-color-label">
+          <label class="radio-option">
+            <input type="radio" name="settings-color" value="white" data-ref="settings-color-option" checked> Белые
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="settings-color" value="black" data-ref="settings-color-option"> Чёрные
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="settings-color" value="random" data-ref="settings-color-option"> Случайно
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="settings-time-control">Время на партию: <span data-ref="settings-time-value">10</span> мин</label>
+        <input class="range" id="settings-time-control" data-ref="settings-time-control" type="range" min="1" max="60" value="10">
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" data-ref="settings-cancel">Отмена</button>
+        <button type="button" class="btn btn-primary" data-ref="settings-confirm">Начать партию</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// @ts-check
+
+/**
+ * Canonical names of every document-level CustomEvent this page uses to
+ * coordinate independent widgets. Replaces string literals that were
+ * previously repeated at each dispatch/listen site.
+ */
+class ChessEvents {
+  /** Fired by ClockController when a player's time reaches zero. */
+  static CLOCK_EXPIRED = 'clock:expired';
+  /** Fired by BoardController after a move is successfully applied. */
+  static BOARD_MOVE_MADE = 'board:move-made';
+  /** Fired by BoardController when a move attempt is rejected. */
+  static BOARD_ILLEGAL_MOVE = 'board:illegal-move';
+  /** Fired by MoveInputController when the notation field is submitted. */
+  static MOVE_INPUT_SUBMITTED = 'moveinput:submitted';
+  /** Fired by SettingsModalController when "Start game" is confirmed. */
+  static SETTINGS_GAME_STARTED = 'settings:game-started';
+}
+
+/**
+ * Base lifecycle contract shared by every root-owning widget on this page:
+ * resolve `root` (a selector string or an element), silently no-op if it
+ * can't be found, own one AbortController for the instance's whole
+ * listener set, and expose `destroy()` to release it in one call.
+ *
+ * Not extended by BoardRenderer or BoardInputController — both take a
+ * pre-resolved DOM-reference object instead of a root selector, which is a
+ * different constructor contract, not a smaller version of this one.
+ */
+class Widget {
+  /** @param {HTMLElement|string} root - The widget's root element, or a CSS selector for it. */
+  constructor(root) {
+    this._root = typeof root === 'string' ? document.querySelector(root) : root;
+    if (!this._root) return;
+    this._ac = new AbortController();
+  }
+
+  /** Releases every listener registered with this instance's AbortController signal. */
+  destroy() {
+    this._ac.abort();
+  }
+}
+
+/** Site navigation: collapses into a toggleable menu on narrow viewports. */
+class HeaderNavController extends Widget {
+  /** @param {HTMLElement|string} root - The .header-nav-container element or a selector. */
+  constructor(root) {
+    super(root);
+    if (!this._root) return;
+    this._toggleEl = this._root.querySelector('[data-action="toggle-menu"]');
+    this._bind();
+  }
+
+  _bind() {
+    const sig = { signal: this._ac.signal };
+    if (!this._toggleEl) return;
+    this._toggleEl.addEventListener('click', () => this._onToggle(), sig);
+  }
+
+  _onToggle() {
+    const wasCollapsed = this._root.getAttribute('data-state') === 'collapsed';
+    this._root.setAttribute('data-state', wasCollapsed ? 'expanded' : 'collapsed');
+    this._toggleEl.setAttribute('aria-expanded', String(wasCollapsed));
+  }
+}
+
+/**
+ * One player's name/rating/flag/avatar card. Config flows
+ * DEFAULTS -> opts -> data-player-* attributes; instantiated once per player.
+ */
+class PlayerCardController extends Widget {
+  static DEFAULTS = { name: 'Player', rating: '—', flagLabel: '', flagSrc: '' };
+
+  /**
+   * @param {HTMLElement|string} root - The .player-card-container element or a selector.
+   * @param {{name?: string, rating?: string, flagLabel?: string, flagSrc?: string}} [opts]
+   */
+  constructor(root, opts = {}) {
+    super(root);
+    if (!this._root) return;
+    this._config = this._readDataAttrs(opts);
+    this._cacheDom();
+    this._render();
+  }
+
+  /** Layer 3 of config resolution: DEFAULTS, then opts, then data-player-* attributes. */
+  _readDataAttrs(opts) {
+    const d = this._root.dataset;
+    const fromData = {};
+    if (d.playerName) fromData.name = d.playerName;
+    if (d.playerRating) fromData.rating = d.playerRating;
+    if (d.playerFlagLabel) fromData.flagLabel = d.playerFlagLabel;
+    if (d.playerFlagSrc) fromData.flagSrc = d.playerFlagSrc;
+    return { ...PlayerCardController.DEFAULTS, ...opts, ...fromData };
+  }
+
+  _cacheDom() {
+    this._nameEl = this._root.querySelector('[data-ref="player-card-name"]');
+    this._ratingEl = this._root.querySelector('[data-ref="player-card-rating"]');
+    this._avatarEl = this._root.querySelector('[data-ref="player-card-avatar"]');
+    this._flagEl = this._root.querySelector('[data-ref="player-card-flag"]');
+  }
+
+  _initials(name) {
+    return name.trim().split(/\s+/).map((word) => word[0]).slice(0, 2).join('').toUpperCase();
+  }
+
+  _render() {
+    if (this._nameEl) this._nameEl.textContent = this._config.name;
+    if (this._ratingEl) this._ratingEl.textContent = this._config.rating;
+    if (this._avatarEl) this._avatarEl.textContent = this._initials(this._config.name);
+    if (this._flagEl && this._config.flagSrc) {
+      this._flagEl.setAttribute('src', this._config.flagSrc);
+      this._flagEl.setAttribute('alt', this._config.flagLabel ? `Флаг: ${this._config.flagLabel}` : '');
+    }
+  }
+
+  /** The player color this card belongs to ('white'/'black'), read from data-color. @returns {string} */
+  get color() {
+    return this._root.dataset.color;
+  }
+
+  /**
+   * Toggles the visual "it's your move" highlight.
+   * @param {boolean} isActive
+   * @returns {void}
+   */
+  setActiveTurn(isActive) {
+    if (isActive) this._root.setAttribute('data-state', 'active-turn');
+    else this._root.removeAttribute('data-state');
+  }
+}
+
+/**
+ * A single player's countdown clock. Ticks down while running, stops and
+ * fires clock:expired at zero. Each instance is independent — one per
+ * .clock-container, keyed by data-color.
+ */
+class ClockController extends Widget {
+  static DEFAULTS = { minutes: 10 };
+  static MS_PER_MINUTE = 60_000;
+  static LOW_TIME_THRESHOLD_MS = 30_000;
+  static TICK_INTERVAL_MS = 250;
+
+  /**
+   * @param {HTMLElement|string} root - The .clock-container element or a selector.
+   * @param {{minutes?: number}} [opts]
+   */
+  constructor(root, opts = {}) {
+    super(root);
+    if (!this._root) return;
+    this._config = this._readDataAttrs(opts);
+    this._state = { remainingMs: this._config.minutes * ClockController.MS_PER_MINUTE, running: false };
+    this._intervalId = null;
+    this._render();
+  }
+
+  /** Layer 3 of config resolution: DEFAULTS, then opts, then data-clock-minutes. */
+  _readDataAttrs(opts) {
+    const d = this._root.dataset;
+    const cfg = { ...ClockController.DEFAULTS, ...opts };
+    if (d.clockMinutes) cfg.minutes = Number(d.clockMinutes);
+    return cfg;
+  }
+
+  /** The player color this clock belongs to ('white'/'black'), read from data-color. @returns {string} */
+  get color() {
+    return this._root.dataset.color;
+  }
+
+  /**
+   * Stops the clock and restores it to `minutes` (or the configured default).
+   * @param {number} [minutes]
+   * @returns {void}
+   */
+  reset(minutes = this._config.minutes) {
+    this.stop();
+    this._state.remainingMs = minutes * ClockController.MS_PER_MINUTE;
+    this._render();
+  }
+
+  /** Starts ticking down; no-op if already running or already at zero. @returns {void} @fires ChessEvents#CLOCK_EXPIRED */
+  start() {
+    if (this._state.running || this._state.remainingMs <= 0) return;
+    this._state.running = true;
+    let last = performance.now();
+    this._intervalId = setInterval(() => {
+      const now = performance.now();
+      this._state.remainingMs = Math.max(0, this._state.remainingMs - (now - last));
+      last = now;
+      this._render();
+      if (this._state.remainingMs <= 0) {
+        this.stop();
+        document.dispatchEvent(new CustomEvent(ChessEvents.CLOCK_EXPIRED, { detail: { color: this.color } }));
+      }
+    }, ClockController.TICK_INTERVAL_MS);
+    this._render();
+  }
+
+  /** Pauses the countdown; safe to call even if not running. @returns {void} */
+  stop() {
+    this._state.running = false;
+    if (this._intervalId) clearInterval(this._intervalId);
+    this._intervalId = null;
+    this._render();
+  }
+
+  _render() {
+    const totalSeconds = Math.ceil(this._state.remainingMs / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    this._root.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+    if (this._state.remainingMs <= 0) this._root.setAttribute('data-state', 'expired');
+    else if (this._state.running && this._state.remainingMs <= ClockController.LOW_TIME_THRESHOLD_MS) this._root.setAttribute('data-state', 'low-time');
+    else if (this._state.running) this._root.setAttribute('data-state', 'active');
+    else this._root.removeAttribute('data-state');
+  }
+
+  /** @returns {void} */
+  destroy() {
+    this.stop();
+    super.destroy();
+  }
+}
+
+/**
+ * Pure chess movement rules and coordinate math. No DOM, no shared mutable
+ * state — every method is a function of its arguments, so this class runs
+ * and can be unit-tested in plain Node with no browser/DOM required.
+ * Deliberately not a Widget: it has no root, no lifecycle, nothing to
+ * construct — every member is static.
+ */
+class ChessRules {
+  static FILES = 'abcdefgh';
+
+  /** A fresh standard starting position as an 8x8 array (row 0 = rank 8). @returns {Array<Array<{type: string, color: string}|null>>} */
+  static createStartPosition() {
+    const backRank = ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'];
+    const row = (types, color) => types.map((type) => (type ? { type, color } : null));
+    return [
+      row(backRank, 'b'),
+      row(Array(8).fill('p'), 'b'),
+      row(Array(8).fill(null), null),
+      row(Array(8).fill(null), null),
+      row(Array(8).fill(null), null),
+      row(Array(8).fill(null), null),
+      row(Array(8).fill('p'), 'w'),
+      row(backRank, 'w'),
+    ];
+  }
+
+  /**
+   * Converts a {row, col} pair to algebraic notation, e.g. {row:6,col:4} -> "e2".
+   * @param {number} row
+   * @param {number} col
+   * @returns {string}
+   */
+  static squareName(row, col) {
+    return `${ChessRules.FILES[col]}${8 - row}`;
+  }
+
+  /**
+   * Converts algebraic notation, e.g. "e2", to a {row, col} pair.
+   * @param {string} name
+   * @returns {{row: number, col: number}}
+   */
+  static squareFromName(name) {
+    return { col: ChessRules.FILES.indexOf(name[0]), row: 8 - Number(name[1]) };
+  }
+
+  /** True if every square strictly between from and to is empty. @returns {boolean} */
+  static isPathClear(position, from, to) {
+    const stepRow = Math.sign(to.row - from.row);
+    const stepCol = Math.sign(to.col - from.col);
+    let row = from.row + stepRow;
+    let col = from.col + stepCol;
+    while (row !== to.row || col !== to.col) {
+      if (position[row][col]) return false;
+      row += stepRow;
+      col += stepCol;
+    }
+    return true;
+  }
+
+  /**
+   * True if moving the piece at `from` to `to` follows that piece's movement
+   * pattern. Does not check whose turn it is, and does not check whether the
+   * move would leave the mover's own king in check (see project spec §12).
+   * @returns {boolean}
+   */
+  static isPseudoLegal(position, from, to) {
+    const piece = position[from.row][from.col];
+    if (!piece) return false;
+    const target = position[to.row][to.col];
+    if (target && target.color === piece.color) return false;
+
+    const dRow = to.row - from.row;
+    const dCol = to.col - from.col;
+    const absRow = Math.abs(dRow);
+    const absCol = Math.abs(dCol);
+    if (absRow === 0 && absCol === 0) return false;
+
+    switch (piece.type) {
+      case 'p': {
+        const dir = piece.color === 'w' ? -1 : 1;
+        const startRow = piece.color === 'w' ? 6 : 1;
+        if (dCol === 0 && !target) {
+          if (dRow === dir) return true;
+          return from.row === startRow && dRow === 2 * dir && !position[from.row + dir][from.col];
+        }
+        return absCol === 1 && dRow === dir && !!target && target.color !== piece.color;
+      }
+      case 'n':
+        return (absRow === 2 && absCol === 1) || (absRow === 1 && absCol === 2);
+      case 'b':
+        return absRow === absCol && ChessRules.isPathClear(position, from, to);
+      case 'r':
+        return (dRow === 0 || dCol === 0) && ChessRules.isPathClear(position, from, to);
+      case 'q':
+        return (dRow === 0 || dCol === 0 || absRow === absCol) && ChessRules.isPathClear(position, from, to);
+      case 'k':
+        return absRow <= 1 && absCol <= 1;
+      default:
+        return false;
+    }
+  }
+
+  /** All square names a piece at `from` could pseudo-legally move to. @returns {string[]} */
+  static legalTargetsFrom(position, from) {
+    const targets = [];
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        if (ChessRules.isPseudoLegal(position, from, { row: r, col: c })) {
+          targets.push(ChessRules.squareName(r, c));
+        }
+      }
+    }
+    return targets;
+  }
+}
+
+/**
+ * Builds the board's DOM from a state snapshot, and separately owns the
+ * transient drag overlay (ghost + drag-over highlight + origin-piece fade).
+ * Two update rhythms, one owner: render() is the expensive full rebuild
+ * (once per real move), renderDragOverlay() is the cheap targeted update
+ * (once per pointermove) — nothing outside this class touches either.
+ * Not a Widget: it receives resolved DOM references from its owner
+ * (BoardController), it does not resolve a root selector itself.
+ */
+class BoardRenderer {
+  static PIECE_NAMES = {
+    k: 'король', q: 'ферзь', r: 'ладья', b: 'слон', n: 'конь', p: 'пешка',
+  };
+
+  static PIECE_FILES = {
+    w: { k: 'White_King.svg', q: 'White_Queen.svg', r: 'White_Rook.svg', b: 'White_Bishop.svg', n: 'White_Knight.svg', p: 'White_Pawn.svg' },
+    b: { k: 'Black_King.svg', q: 'Black_Queen.svg', r: 'Black_Rook.svg', b: 'Black_Bishop.svg', n: 'Black_Knight.svg', p: 'Black_Pawn.svg' },
+  };
+
+  /** @param {{gridEl: HTMLElement, ranksEl: HTMLElement, filesEl: HTMLElement, ghostEl: HTMLElement}} dom */
+  constructor(dom) {
+    this._gridEl = dom.gridEl;
+    this._ranksEl = dom.ranksEl;
+    this._filesEl = dom.filesEl;
+    this._ghostEl = dom.ghostEl;
+    this._draggingPieceEl = null;
+    this._renderCoordinates();
+  }
+
+  // Fixed rank (8-1) and file (a-h) labels — rendered once, never change.
+  _renderCoordinates() {
+    const ranks = document.createDocumentFragment();
+    for (let rank = 8; rank >= 1; rank--) {
+      const span = document.createElement('span');
+      span.textContent = String(rank);
+      ranks.appendChild(span);
+    }
+    this._ranksEl.replaceChildren(ranks);
+
+    const files = document.createDocumentFragment();
+    for (const file of ChessRules.FILES) {
+      const span = document.createElement('span');
+      span.textContent = file;
+      files.appendChild(span);
+    }
+    this._filesEl.replaceChildren(files);
+  }
+
+  /**
+   * Rebuilds all 64 squares from the given board state. Also resets the
+   * drag overlay unconditionally — a defensive backstop so a stuck ghost
+   * can survive at most until the next real game event, regardless of
+   * whether the drag that created it cleaned up after itself.
+   * @param {{position: any[][], selectedSquare: string|null, focusedSquare: string}} state
+   * @returns {void}
+   */
+  render(state) {
+    const legalTargets = new Set();
+    if (state.selectedSquare) {
+      const selected = ChessRules.squareFromName(state.selectedSquare);
+      ChessRules.legalTargetsFrom(state.position, selected).forEach((square) => legalTargets.add(square));
+    }
+
+    const fragment = document.createDocumentFragment();
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const squareName = ChessRules.squareName(row, col);
+        const square = document.createElement('div');
+        square.className = 'square';
+        square.dataset.ref = 'board-square';
+        square.dataset.id = squareName;
+        square.setAttribute('role', 'gridcell');
+        square.tabIndex = squareName === state.focusedSquare ? 0 : -1;
+
+        const tokens = [(row + col) % 2 === 0 ? 'light' : 'dark'];
+        if (state.selectedSquare === squareName) tokens.push('selected');
+        if (legalTargets.has(squareName)) tokens.push('legal-target');
+        square.dataset.state = tokens.join(' ');
+
+        const piece = state.position[row][col];
+        square.setAttribute('aria-label', piece ? this._pieceLabel(piece, squareName) : squareName);
+
+        if (piece) square.appendChild(this._createPieceElement(piece));
+        fragment.appendChild(square);
+      }
+    }
+    this._gridEl.replaceChildren(fragment);
+    this.renderDragOverlay(null);
+  }
+
+  /**
+   * Renders the transient drag overlay from a snapshot — the ghost image,
+   * the drag-over highlight on whatever square is under the pointer, and
+   * the fade on the piece being dragged — or clears all three when passed
+   * a falsy value. The only method in the codebase that touches any of them.
+   * @param {{pieceSrc: string, pieceColor: string, fromSquareName: string, x: number, y: number, overSquareName: string|null}|null} overlay
+   * @returns {void}
+   */
+  renderDragOverlay(overlay) {
+    this._clearDragOverState();
+    if (this._draggingPieceEl) {
+      this._draggingPieceEl.dataset.state = this._draggingPieceEl.dataset.state.replace(/\bdragging\b/, '').trim();
+      this._draggingPieceEl = null;
+    }
+
+    if (!overlay) {
+      this._ghostEl.hidden = true;
+      this._ghostEl.removeAttribute('src');
+      return;
+    }
+
+    this._ghostEl.src = overlay.pieceSrc;
+    this._ghostEl.dataset.state = overlay.pieceColor;
+    this._ghostEl.style.left = `${overlay.x}px`;
+    this._ghostEl.style.top = `${overlay.y}px`;
+    this._ghostEl.hidden = false;
+
+    const originPieceEl = this._gridEl.querySelector(
+      `[data-ref="board-square"][data-id="${overlay.fromSquareName}"] [data-ref="board-piece"]`,
+    );
+    if (originPieceEl) {
+      originPieceEl.dataset.state = `${originPieceEl.dataset.state} dragging`.trim();
+      this._draggingPieceEl = originPieceEl;
+    }
+
+    if (overlay.overSquareName) {
+      const overSquareEl = this._gridEl.querySelector(
+        `[data-ref="board-square"][data-id="${overlay.overSquareName}"]`,
+      );
+      if (overSquareEl) overSquareEl.dataset.state = `${overSquareEl.dataset.state} drag-over`.trim();
+    }
+  }
+
+  _clearDragOverState() {
+    this._gridEl.querySelectorAll('[data-state~="drag-over"]').forEach((el) => {
+      el.dataset.state = el.dataset.state.replace(/\bdrag-over\b/, '').trim();
+    });
+  }
+
+  // Decorative <img> — alt/aria-hidden, since the parent square already carries the accessible label.
+  _createPieceElement(piece) {
+    const pieceEl = document.createElement('img');
+    pieceEl.className = 'piece';
+    pieceEl.dataset.ref = 'board-piece';
+    pieceEl.dataset.state = '';
+    pieceEl.draggable = false;
+    pieceEl.alt = '';
+    pieceEl.setAttribute('aria-hidden', 'true');
+    pieceEl.src = BoardRenderer.PIECE_FILES[piece.color][piece.type];
+    return pieceEl;
+  }
+
+  _pieceLabel(piece, squareName) {
+    const color = piece.color === 'w' ? 'белая' : 'чёрная';
+    return `${squareName}, ${color} ${BoardRenderer.PIECE_NAMES[piece.type]}`;
+  }
+}
+
+/**
+ * Detects click, keyboard, and pointer-drag gestures on the board grid and
+ * reports them through `hooks`. Holds no game state and touches no visual
+ * styling of its own — it asks the parent what a square looks like via
+ * hooks.dragCandidate(), and tells the parent what happened; BoardRenderer
+ * is the only thing that ever paints a response.
+ * Not a Widget: it receives a resolved DOM-reference object and a hooks
+ * callback bag from its owner, not a root selector.
+ */
+class BoardInputController {
+  /**
+   * @param {{gridEl: HTMLElement}} dom
+   * @param {{dragCandidate: Function, onActivate: Function, onFocusMove: Function, onEscape: Function, onDragStart: Function, onDragProgress: Function, onDragEnd: Function, onMove: Function}} hooks
+   */
+  constructor(dom, hooks) {
+    this._gridEl = dom.gridEl;
+    this._hooks = hooks;
+    this._ac = new AbortController();
+    this._dragFrom = null;
+    this._dragPointerId = null;
+    this._suppressNextClick = false;
+    this._boundOnDragMove = (event) => this._onDragMove(event);
+    this._boundOnDragEnd = (event) => this._onDragEnd(event);
+    this._boundOnDragCancel = () => this._onDragCancel();
+    this._bind();
+  }
+
+  // Named invariant: at most one drag open at a time. Same underlying
+  // field as before, just a check that no longer has to be inferred.
+  get _isDragging() {
+    return this._dragFrom !== null;
+  }
+
+  _bind() {
+    const sig = { signal: this._ac.signal };
+    this._gridEl.addEventListener('click', (event) => this._onClick(event), sig);
+    this._gridEl.addEventListener('keydown', (event) => this._onKeydown(event), sig);
+    this._gridEl.addEventListener('pointerdown', (event) => this._onPointerDown(event), sig);
+  }
+
+  _onClick(event) {
+    if (this._suppressNextClick) {
+      this._suppressNextClick = false;
+      return;
+    }
+    const squareEl = event.target.closest('[data-ref="board-square"]');
+    if (!squareEl) return;
+    this._hooks.onFocusMove(squareEl.dataset.id);
+    this._hooks.onActivate(squareEl.dataset.id);
+  }
+
+  _onKeydown(event) {
+    const squareEl = event.target.closest('[data-ref="board-square"]');
+    if (!squareEl) return;
+    const { row, col } = ChessRules.squareFromName(squareEl.dataset.id);
+
+    const deltas = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] };
+    if (deltas[event.key]) {
+      event.preventDefault();
+      const [dRow, dCol] = deltas[event.key];
+      const nextRow = Math.min(7, Math.max(0, row + dRow));
+      const nextCol = Math.min(7, Math.max(0, col + dCol));
+      const nextSquare = ChessRules.squareName(nextRow, nextCol);
+      this._hooks.onFocusMove(nextSquare);
+      this._gridEl.querySelector(`[data-ref="board-square"][data-id="${nextSquare}"]`)?.focus();
+      return;
+    }
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this._hooks.onActivate(squareEl.dataset.id);
+      return;
+    }
+    if (event.key === 'Escape') {
+      this._hooks.onEscape();
+    }
+  }
+
+  _onPointerDown(event) {
+    if (this._isDragging) return;
+    const pieceEl = event.target.closest('[data-ref="board-piece"]');
+    if (!pieceEl) return;
+    const squareEl = pieceEl.closest('[data-ref="board-square"]');
+    const squareName = squareEl.dataset.id;
+    const pieceInfo = this._hooks.dragCandidate(squareName);
+    if (!pieceInfo) return;
+
+    this._dragFrom = squareName;
+    this._dragPointerId = event.pointerId;
+    pieceEl.setPointerCapture(event.pointerId);
+    this._hooks.onDragStart(squareName, pieceInfo, event.clientX, event.clientY);
+
+    // pointermove fires many times per drag, so it can't use {once:true};
+    // pointerup/pointercancel/lostpointercapture each fire at most once,
+    // but as three *different* event types racing to end the same drag —
+    // {once:true} on each would still leave the other two dangling until
+    // destroy(), so _cleanupDrag() below removes all four together the
+    // moment any one of the three termination events fires. signal is
+    // still the eventual safety net if none of them ever does.
+    const sig = { signal: this._ac.signal };
+    this._gridEl.addEventListener('pointermove', this._boundOnDragMove, sig);
+    this._gridEl.addEventListener('pointerup', this._boundOnDragEnd, sig);
+    this._gridEl.addEventListener('pointercancel', this._boundOnDragCancel, sig);
+    // Third termination path alongside pointerup/pointercancel: if the browser
+    // revokes capture on its own (focus/window change, OS-level gesture
+    // interruption, etc.) neither of those may ever fire, and without this the
+    // drag overlay had no way to know the gesture was over.
+    this._gridEl.addEventListener('lostpointercapture', this._boundOnDragCancel, sig);
+  }
+
+  _onDragMove(event) {
+    const under = document.elementFromPoint(event.clientX, event.clientY);
+    const overSquare = under && under.closest('[data-ref="board-square"]');
+    this._hooks.onDragProgress(event.clientX, event.clientY, overSquare ? overSquare.dataset.id : null);
+  }
+
+  // Looks the dragged piece up fresh by square name rather than holding a
+  // node reference across the gesture, so a render() interleaving with an
+  // in-progress drag can never leave this holding a stale/detached element.
+  _releaseDragCapture() {
+    const pieceEl = this._gridEl.querySelector(
+      `[data-ref="board-square"][data-id="${this._dragFrom}"] [data-ref="board-piece"]`,
+    );
+    if (pieceEl && pieceEl.hasPointerCapture(this._dragPointerId)) {
+      pieceEl.releasePointerCapture(this._dragPointerId);
+    }
+  }
+
+  // Shared teardown for every way a drag can end: drop, miss, or cancel.
+  _cleanupDrag() {
+    this._releaseDragCapture();
+    this._gridEl.removeEventListener('pointermove', this._boundOnDragMove);
+    this._gridEl.removeEventListener('pointerup', this._boundOnDragEnd);
+    this._gridEl.removeEventListener('pointercancel', this._boundOnDragCancel);
+    this._gridEl.removeEventListener('lostpointercapture', this._boundOnDragCancel);
+    this._suppressNextClick = true;
+    this._dragPointerId = null;
+  }
+
+  _onDragEnd(event) {
+    const under = document.elementFromPoint(event.clientX, event.clientY);
+    const overSquare = under && under.closest('[data-ref="board-square"]');
+    const from = this._dragFrom;
+    this._cleanupDrag();
+    this._dragFrom = null;
+    // The drag is over regardless of what happens next, so the overlay
+    // clears here — attempting the move is a separate, later step that may
+    // still fail chess-legality, or may succeed and trigger a full board
+    // re-render. Either way the overlay must not survive this handler, so
+    // it is cleared again below rather than trusting this single call.
+    this._hooks.onDragEnd();
+    if (overSquare && from) {
+      this._hooks.onMove(from, overSquare.dataset.id);
+    }
+    this._hooks.onDragEnd();
+  }
+
+  _onDragCancel() {
+    if (!this._isDragging) return;
+    this._cleanupDrag();
+    this._dragFrom = null;
+    this._hooks.onDragEnd();
+  }
+
+  /** @returns {void} */
+  destroy() {
+    this._ac.abort();
+  }
+}
+
+/**
+ * Orchestrates one chess board: owns game state and the public API
+ * (applyMove, reset), and composes ChessRules/BoardRenderer/
+ * BoardInputController rather than implementing rules, DOM, or input
+ * handling itself.
+ */
+class BoardController extends Widget {
+  /** @param {HTMLElement|string} root - The .board-container element or a selector. */
+  constructor(root) {
+    super(root);
+    if (!this._root) return;
+    this._state = {
+      position: ChessRules.createStartPosition(),
+      turn: 'w',
+      selectedSquare: null,
+      focusedSquare: 'e2',
+    };
+    this._dragOverlay = null;
+    this._cacheDom();
+    this._renderer = new BoardRenderer({ gridEl: this._gridEl, ranksEl: this._ranksEl, filesEl: this._filesEl, ghostEl: this._ghostEl });
+    this._input = new BoardInputController(
+      { gridEl: this._gridEl },
+      {
+        dragCandidate: (squareName) => this._dragCandidateAt(squareName),
+        onActivate: (squareName) => this._handleSquareActivate(squareName),
+        onFocusMove: (squareName) => this._moveFocus(squareName),
+        onEscape: () => this._clearSelection(),
+        onDragStart: (fromSquareName, pieceInfo, x, y) => this._startDragOverlay(fromSquareName, pieceInfo, x, y),
+        onDragProgress: (x, y, overSquareName) => this._updateDragOverlay(x, y, overSquareName),
+        onDragEnd: () => this._clearDragOverlay(),
+        onMove: (fromName, toName) => this._tryMove(ChessRules.squareFromName(fromName), ChessRules.squareFromName(toName)),
+      },
+    );
+    this._render();
+  }
+
+  _cacheDom() {
+    this._gridEl = this._root.querySelector('[data-ref="board-grid"]');
+    this._ranksEl = this._root.querySelector('[data-ref="board-ranks"]');
+    this._filesEl = this._root.querySelector('[data-ref="board-files"]');
+    this._ghostEl = this._root.querySelector('[data-ref="board-drag-ghost"]');
+  }
+
+  // Answers "what would picking this square up look like", or null if it isn't this turn's piece.
+  _dragCandidateAt(squareName) {
+    const { row, col } = ChessRules.squareFromName(squareName);
+    const piece = this._state.position[row][col];
+    if (!piece || piece.color !== this._state.turn) return null;
+    return {
+      src: BoardRenderer.PIECE_FILES[piece.color][piece.type],
+      color: piece.color === 'w' ? 'white' : 'black',
+    };
+  }
+
+  // Lifecycle trio: start creates this._dragOverlay, update mutates it in
+  // place, clear drops it — each one just forwards the current snapshot to
+  // BoardRenderer.renderDragOverlay, which is the only thing that paints it.
+  _startDragOverlay(fromSquareName, pieceInfo, x, y) {
+    this._dragOverlay = { pieceSrc: pieceInfo.src, pieceColor: pieceInfo.color, fromSquareName, x, y, overSquareName: null };
+    this._renderer.renderDragOverlay(this._dragOverlay);
+  }
+
+  // Called on every pointermove — cheap, targeted, never rebuilds the grid.
+  _updateDragOverlay(x, y, overSquareName) {
+    if (!this._dragOverlay) return;
+    this._dragOverlay.x = x;
+    this._dragOverlay.y = y;
+    this._dragOverlay.overSquareName = overSquareName;
+    this._renderer.renderDragOverlay(this._dragOverlay);
+  }
+
+  // Called when a drag ends for any reason, and defensively again inside
+  // every full render() — see BoardRenderer.render()'s backstop.
+  _clearDragOverlay() {
+    this._dragOverlay = null;
+    this._renderer.renderDragOverlay(null);
+  }
+
+  /**
+   * Parses "e2-e4"-style notation and attempts the move; the single entry point shared with drag-and-drop.
+   * @param {string} notation
+   * @returns {boolean}
+   * @fires ChessEvents#BOARD_MOVE_MADE
+   * @fires ChessEvents#BOARD_ILLEGAL_MOVE
+   */
+  applyMove(notation) {
+    const match = /^\s*([a-h][1-8])\s*[-\s]\s*([a-h][1-8])\s*$/i.exec(String(notation));
+    if (!match) {
+      this._emitIllegal(null, null, 'format');
+      return false;
+    }
+    const from = ChessRules.squareFromName(match[1].toLowerCase());
+    const to = ChessRules.squareFromName(match[2].toLowerCase());
+    return this._tryMove(from, to);
+  }
+
+  _tryMove(from, to) {
+    const fromName = ChessRules.squareName(from.row, from.col);
+    const toName = ChessRules.squareName(to.row, to.col);
+    const piece = this._state.position[from.row][from.col];
+
+    if (!piece) { this._emitIllegal(fromName, toName, 'empty-square'); return false; }
+    if (piece.color !== this._state.turn) { this._emitIllegal(fromName, toName, 'wrong-turn'); return false; }
+    if (!ChessRules.isPseudoLegal(this._state.position, from, to)) { this._emitIllegal(fromName, toName, 'illegal-pattern'); return false; }
+
+    const capturedPiece = this._state.position[to.row][to.col];
+    this._state.position[to.row][to.col] = piece;
+    this._state.position[from.row][from.col] = null;
+    if (piece.type === 'p' && (to.row === 0 || to.row === 7)) piece.type = 'q';
+
+    this._state.turn = this._state.turn === 'w' ? 'b' : 'w';
+    this._state.selectedSquare = null;
+    this._state.focusedSquare = toName;
+    this._render();
+
+    document.dispatchEvent(new CustomEvent(ChessEvents.BOARD_MOVE_MADE, {
+      detail: {
+        from: fromName,
+        to: toName,
+        piece: piece.type,
+        color: piece.color,
+        notation: `${fromName}-${toName}`,
+        capturedPiece: capturedPiece ? capturedPiece.type : null,
+      },
+    }));
+    return true;
+  }
+
+  _emitIllegal(from, to, reason) {
+    document.dispatchEvent(new CustomEvent(ChessEvents.BOARD_ILLEGAL_MOVE, { detail: { from, to, reason } }));
+  }
+
+  /** Restores the standard starting position and white to move. @returns {void} */
+  reset() {
+    this._state.position = ChessRules.createStartPosition();
+    this._state.turn = 'w';
+    this._state.selectedSquare = null;
+    this._state.focusedSquare = 'e2';
+    this._render();
+  }
+
+  _moveFocus(squareName) {
+    this._state.focusedSquare = squareName;
+    this._render();
+  }
+
+  _clearSelection() {
+    if (this._state.selectedSquare) {
+      this._state.selectedSquare = null;
+      this._render();
+    }
+  }
+
+  _handleSquareActivate(squareName) {
+    const { row, col } = ChessRules.squareFromName(squareName);
+    const piece = this._state.position[row][col];
+
+    if (this._state.selectedSquare) {
+      const from = ChessRules.squareFromName(this._state.selectedSquare);
+      if (this._state.selectedSquare === squareName) {
+        this._state.selectedSquare = null;
+        this._render();
+        return;
+      }
+      const moved = this._tryMove(from, { row, col });
+      if (moved) return;
+      if (piece && piece.color === this._state.turn) {
+        this._state.selectedSquare = squareName;
+        this._render();
+      } else {
+        this._state.selectedSquare = null;
+        this._render();
+      }
+      return;
+    }
+
+    if (piece && piece.color === this._state.turn) {
+      this._state.selectedSquare = squareName;
+      this._render();
+    }
+  }
+
+  _render() {
+    this._renderer.render(this._state);
+  }
+
+  /** @returns {void} */
+  destroy() {
+    this._input.destroy();
+    super.destroy();
+  }
+}
+
+/**
+ * The algebraic-notation text field ("e2-e4") and its submit button. Shares
+ * BoardController.applyMove() as its only entry point via the
+ * moveinput:submitted -> orchestrator -> board.applyMove() event chain.
+ */
+class MoveInputController extends Widget {
+  static INVALID_FLASH_MS = 250;
+
+  /** @param {HTMLElement|string} root - The .move-input-container form element or a selector. */
+  constructor(root) {
+    super(root);
+    if (!this._root) return;
+    this._fieldEl = this._root.querySelector('[data-ref="move-input-field"]');
+    this._bind();
+  }
+
+  _bind() {
+    const sig = { signal: this._ac.signal };
+    this._root.addEventListener('submit', (event) => this._onSubmit(event), sig);
+    document.addEventListener(ChessEvents.BOARD_ILLEGAL_MOVE, () => this._flagInvalid(), sig);
+    document.addEventListener(ChessEvents.BOARD_MOVE_MADE, () => this._clear(), sig);
+  }
+
+  /** @fires ChessEvents#MOVE_INPUT_SUBMITTED */
+  _onSubmit(event) {
+    event.preventDefault();
+    const value = this._fieldEl.value.trim();
+    if (!value) return;
+    document.dispatchEvent(new CustomEvent(ChessEvents.MOVE_INPUT_SUBMITTED, { detail: { notation: value } }));
+  }
+
+  _flagInvalid() {
+    this._fieldEl.dataset.state = 'invalid';
+    setTimeout(() => this._fieldEl.removeAttribute('data-state'), MoveInputController.INVALID_FLASH_MS);
+  }
+
+  _clear() {
+    this._fieldEl.value = '';
+    this._fieldEl.removeAttribute('data-state');
+  }
+}
+
+/**
+ * Paginated move history. Builds its own list purely from board:move-made
+ * events — never reads BoardController's state directly.
+ */
+class MovesController extends Widget {
+  static DEFAULTS = { pageSize: 8 };
+
+  /**
+   * @param {HTMLElement|string} root - The .moves-container element or a selector.
+   * @param {{pageSize?: number}} [opts]
+   */
+  constructor(root, opts = {}) {
+    super(root);
+    if (!this._root) return;
+    this._config = this._readDataAttrs(opts);
+    this._state = { moves: [], page: 1 };
+    this._cacheDom();
+    this._bind();
+    this._render();
+  }
+
+  /** Layer 3 of config resolution: DEFAULTS, then opts, then data-moves-page-size. */
+  _readDataAttrs(opts) {
+    const d = this._root.dataset;
+    const cfg = { ...MovesController.DEFAULTS, ...opts };
+    if (d.movesPageSize) cfg.pageSize = Number(d.movesPageSize);
+    return cfg;
+  }
+
+  _cacheDom() {
+    this._listEl = this._root.querySelector('[data-ref="moves-list"]');
+    this._pageLabelEl = this._root.querySelector('[data-ref="moves-page-label"]');
+    this._prevBtn = this._root.querySelector('[data-ref="moves-prev"]');
+    this._nextBtn = this._root.querySelector('[data-ref="moves-next"]');
+  }
+
+  _bind() {
+    const sig = { signal: this._ac.signal };
+    document.addEventListener(ChessEvents.BOARD_MOVE_MADE, (event) => this._onMoveMade(event), sig);
+    this._prevBtn.addEventListener('click', () => this._changePage(-1), sig);
+    this._nextBtn.addEventListener('click', () => this._changePage(1), sig);
+  }
+
+  _onMoveMade(event) {
+    this._state.moves.push(event.detail);
+    this._state.page = this._totalPages();
+    this._render();
+  }
+
+  /** Clears the move history back to an empty first page. @returns {void} */
+  reset() {
+    this._state.moves = [];
+    this._state.page = 1;
+    this._render();
+  }
+
+  _totalPages() {
+    const pairCount = Math.ceil(this._state.moves.length / 2);
+    return Math.max(1, Math.ceil(pairCount / this._config.pageSize));
+  }
+
+  _changePage(delta) {
+    const next = this._state.page + delta;
+    if (next < 1 || next > this._totalPages()) return;
+    this._state.page = next;
+    this._render();
+  }
+
+  _pairMoves() {
+    const pairs = [];
+    for (let i = 0; i < this._state.moves.length; i += 2) {
+      pairs.push({ number: i / 2 + 1, white: this._state.moves[i], black: this._state.moves[i + 1] });
+    }
+    return pairs;
+  }
+
+  _cell(text) {
+    const td = document.createElement('td');
+    td.textContent = text;
+    return td;
+  }
+
+  _render() {
+    const pairs = this._pairMoves();
+    const totalPages = this._totalPages();
+    const start = (this._state.page - 1) * this._config.pageSize;
+    const pagePairs = pairs.slice(start, start + this._config.pageSize);
+
+    if (pagePairs.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'empty';
+      empty.textContent = 'Ходов пока нет';
+      this._listEl.replaceChildren(empty);
+    } else {
+      const table = document.createElement('table');
+      const tbody = document.createElement('tbody');
+      pagePairs.forEach((pair) => {
+        const row = document.createElement('tr');
+        row.appendChild(this._cell(String(pair.number)));
+        row.appendChild(this._cell(pair.white ? pair.white.notation : ''));
+        row.appendChild(this._cell(pair.black ? pair.black.notation : ''));
+        tbody.appendChild(row);
+      });
+      table.appendChild(tbody);
+      this._listEl.replaceChildren(table);
+    }
+
+    this._pageLabelEl.textContent = `Стр. ${this._state.page} из ${totalPages}`;
+    this._prevBtn.disabled = this._state.page <= 1;
+    this._nextBtn.disabled = this._state.page >= totalPages;
+  }
+}
+
+/**
+ * The "new game" dialog (color + time control). A real, focus-trapped
+ * modal: Escape/backdrop-click closes it, focus returns to the opener.
+ */
+class SettingsModalController extends Widget {
+  /** @param {HTMLElement|string} root - The .settings-modal-container element or a selector. */
+  constructor(root) {
+    super(root);
+    if (!this._root) return;
+    this._lastFocused = null;
+    this._cacheDom();
+    this._bind();
+  }
+
+  _cacheDom() {
+    this._dialogEl = this._root.querySelector('[data-ref="settings-modal-dialog"]');
+    this._cancelBtn = this._root.querySelector('[data-ref="settings-cancel"]');
+    this._confirmBtn = this._root.querySelector('[data-ref="settings-confirm"]');
+    this._rangeEl = this._root.querySelector('[data-ref="settings-time-control"]');
+    this._rangeValueEl = this._root.querySelector('[data-ref="settings-time-value"]');
+    this._colorInputs = [...this._root.querySelectorAll('[data-ref="settings-color-option"]')];
+  }
+
+  _bind() {
+    const sig = { signal: this._ac.signal };
+    this._cancelBtn.addEventListener('click', () => this.close(), sig);
+    this._confirmBtn.addEventListener('click', () => this._onConfirm(), sig);
+    this._rangeEl.addEventListener('input', () => this._syncRangeLabel(), sig);
+    this._root.addEventListener('click', (event) => { if (event.target === this._root) this.close(); }, sig);
+    // Native HTML/ARIA relationship attributes only (aria-controls, aria-
+    // labelledby, <label for>) ever pair with an id in this file — never
+    // getElementById. The one bare-tag lookup below (button, input, [href])
+    // is the second Law Zero exception: generic focusable-element traversal
+    // for an accessibility utility (focus trap), not a business-logic hook,
+    // so it targets native element semantics rather than a data-ref.
+    this._root.addEventListener('keydown', (event) => this._onKeydown(event), sig);
+  }
+
+  _syncRangeLabel() {
+    this._rangeValueEl.textContent = this._rangeEl.value;
+  }
+
+  _onKeydown(event) {
+    if (event.key === 'Escape') { this.close(); return; }
+    if (event.key !== 'Tab') return;
+    const focusable = this._dialogEl.querySelectorAll('button, input, [href]');
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  /** Shows the dialog and remembers the currently-focused element to restore later. @returns {void} */
+  open() {
+    this._lastFocused = document.activeElement;
+    this._root.hidden = false;
+    this._confirmBtn.focus();
+  }
+
+  /** Hides the dialog and returns focus to whatever opened it. @returns {void} */
+  close() {
+    this._root.hidden = true;
+    if (this._lastFocused) this._lastFocused.focus();
+  }
+
+  /** @fires ChessEvents#SETTINGS_GAME_STARTED */
+  _onConfirm() {
+    const checked = this._colorInputs.find((input) => input.checked);
+    const color = checked ? checked.value : 'white';
+    const timeControl = Number(this._rangeEl.value);
+    document.dispatchEvent(new CustomEvent(ChessEvents.SETTINGS_GAME_STARTED, { detail: { timeControl, color } }));
+    this.close();
+  }
+}
+
+/**
+ * Page-level orchestrator: instantiates every widget on the page and wires
+ * them together through document-level CustomEvents (the orchestration-2
+ * pattern) — never reaches into a child widget's internals, only calls
+ * its public methods.
+ */
+class ChessPageController extends Widget {
+  /** @param {HTMLElement|string} root - The .chess-page element or a selector. */
+  constructor(root) {
+    super(root);
+    if (!this._root) return;
+
+    this._headerNav = new HeaderNavController(this._root.querySelector('.header-nav-container'));
+    this._playerCards = [...this._root.querySelectorAll('.player-card-container')].map((el) => new PlayerCardController(el));
+    this._clocks = [...this._root.querySelectorAll('.clock-container')].map((el) => new ClockController(el));
+    this._board = new BoardController(this._root.querySelector('.board-container'));
+    this._moveInput = new MoveInputController(this._root.querySelector('.move-input-container'));
+    this._moves = new MovesController(this._root.querySelector('.moves-container'));
+    this._settingsModal = new SettingsModalController(this._root.querySelector('.settings-modal-container'));
+    this._newGameTrigger = this._root.querySelector('[data-ref="new-game-trigger"]');
+
+    this._bind();
+    this._syncActiveTurn('w');
+  }
+
+  _bind() {
+    const sig = { signal: this._ac.signal };
+    document.addEventListener(ChessEvents.BOARD_MOVE_MADE, (event) => this._onMoveMade(event), sig);
+    document.addEventListener(ChessEvents.MOVE_INPUT_SUBMITTED, (event) => this._board.applyMove(event.detail.notation), sig);
+    document.addEventListener(ChessEvents.CLOCK_EXPIRED, (event) => this._onClockExpired(event), sig);
+    document.addEventListener(ChessEvents.SETTINGS_GAME_STARTED, (event) => this._onGameStarted(event), sig);
+    if (this._newGameTrigger) this._newGameTrigger.addEventListener('click', () => this._settingsModal.open(), sig);
+  }
+
+  _onMoveMade(event) {
+    const nextTurn = event.detail.color === 'w' ? 'b' : 'w';
+    this._syncActiveTurn(nextTurn);
+  }
+
+  _syncActiveTurn(turnColor) {
+    this._playerCards.forEach((card) => card.setActiveTurn(card.color === turnColor));
+    this._clocks.forEach((clock) => {
+      if (clock.color === turnColor) clock.start();
+      else clock.stop();
+    });
+  }
+
+  _onClockExpired() {
+    this._clocks.forEach((clock) => clock.stop());
+  }
+
+  /** @listens ChessEvents#SETTINGS_GAME_STARTED */
+  _onGameStarted(event) {
+    this._clocks.forEach((clock) => clock.reset(event.detail.timeControl));
+    this._moves.reset();
+    // event.detail.color ('white'/'black'/'random') is intentionally not
+    // applied yet: BoardController.reset() and the syncActiveTurn('w') call
+    // below always start the new game with white to move, so choosing
+    // "black"/"random" in the dialog currently has no effect on play. Real
+    // support would need to flip which .player-row is "top"/"bottom" (or
+    // otherwise re-map color to side) — an open product decision, not a
+    // refactor, see migration plan §7. Left as-is rather than silently
+    // dropped, so the gap stays visible in the code, not just in a doc.
+    this._board.reset();
+    this._syncActiveTurn('w');
+  }
+
+  /** @returns {void} */
+  destroy() {
+    this._headerNav.destroy();
+    this._playerCards.forEach((card) => card.destroy());
+    this._clocks.forEach((clock) => clock.destroy());
+    this._board.destroy();
+    this._moveInput.destroy();
+    this._moves.destroy();
+    this._settingsModal.destroy();
+    super.destroy();
+  }
+}
+
+/** Boots the page once the DOM is ready. Closes the one bootstrap exception containerization-11.md §6.1 leaves open — see migration plan §0.2. */
+class ChessApplication {
+  /** @returns {void} */
+  static start() {
+    document.addEventListener('DOMContentLoaded', () => {
+      window.chessPage = new ChessPageController('.chess-page');
+    });
+  }
+}
+
+ChessApplication.start();
+</script>
+</body>
+</html>
